@@ -9,3 +9,14 @@
 .heroArtwork{height:300px;width:100%;margin-top:2px;padding:0 12px 12px}
 .heroArtwork .heroArt{position:relative;inset:auto;width:100%;height:100%;display:block;border-radius:28px}
 @media(max-width:360px){.heroCopy h1{font-size:30px}.heroCopy h1 strong{font-size:36px}.heroArtwork{height:270px}.introHero{min-height:485px}}
+
+/* Hero v3: raster artwork + HTML copy overlay */
+.introHero{position:relative;height:500px;min-height:500px;display:block;padding:0;background:#dff5ff;overflow:hidden}
+.heroArtwork{position:absolute;inset:0;width:100%;height:100%;padding:0;margin:0;z-index:0}
+.heroArtwork:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(235,249,255,.98) 0%,rgba(235,249,255,.88) 22%,rgba(235,249,255,.30) 48%,rgba(255,255,255,0) 72%);pointer-events:none}
+.heroPhoto{width:100%;height:100%;display:block;object-fit:cover;object-position:center 48%}
+.heroCopy{position:absolute;z-index:2;top:20px;left:0;right:0;padding:20px 24px 0;text-align:center;pointer-events:none}
+.heroCopy h1{font-size:34px;line-height:1.13;color:#163944;text-shadow:0 2px 0 rgba(255,255,255,.65)}
+.heroCopy h1 strong{font-size:41px}
+.heroCopy p{max-width:290px;margin:11px auto 0;color:#3f5e66;background:rgba(255,255,255,.58);backdrop-filter:blur(4px);padding:7px 11px;border-radius:999px}
+@media(max-width:360px){.introHero{height:470px;min-height:470px}.heroCopy{top:14px;padding-left:18px;padding-right:18px}.heroCopy h1{font-size:30px}.heroCopy h1 strong{font-size:36px}}
