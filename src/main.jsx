@@ -14,9 +14,12 @@ function App(){
  const [weather,setWeather]=useState(null);
  const [result,setResult]=useState(null);
  const [excluded,setExcluded]=useState([]);
- const [open,setOpen]=useState(false);\n const [when,setWhen]=useState("today");\n const [notice,setNotice]=useState("");
+ const [open,setOpen]=useState(false);
+ const [when,setWhen]=useState("today");
+ const [notice,setNotice]=useState("");
 
- useEffect(()=>{fetch("/data/places.json").then(r=>r.json()).then(d=>setPlaces(d.records||[]));try{const saved=JSON.parse(localStorage.getItem("jtw-family")||"null");if(saved){if(saved.ages?.length)setAges(saved.ages);if(saved.county)setCounty(saved.county);if(saved.prefs?.length)setPrefs(saved.prefs)}}catch{}},[]);\n useEffect(()=>{localStorage.setItem("jtw-family",JSON.stringify({ages,county,prefs}))},[ages,county,prefs]);
+ useEffect(()=>{fetch("/data/places.json").then(r=>r.json()).then(d=>setPlaces(d.records||[]));try{const saved=JSON.parse(localStorage.getItem("jtw-family")||"null");if(saved){if(saved.ages?.length)setAges(saved.ages);if(saved.county)setCounty(saved.county);if(saved.prefs?.length)setPrefs(saved.prefs)}}catch{}},[]);
+ useEffect(()=>{localStorage.setItem("jtw-family",JSON.stringify({ages,county,prefs}))},[ages,county,prefs]);
  useEffect(()=>{const c={"台北":[25.0478,121.5319],"新北":[25.012,121.4657],"桃園":[24.9937,121.301],"新竹":[24.8138,120.9675],"苗栗":[24.5602,120.8214],"台中":[24.1477,120.6736],"彰化":[24.0756,120.544],"南投":[23.9609,120.9719],"雲林":[23.7092,120.4313],"嘉義":[23.4801,120.4491],"台南":[22.9999,120.227],"高雄":[22.6273,120.3014],"屏東":[22.6761,120.4942],"宜蘭":[24.7021,121.7378],"花蓮":[23.9911,121.6112],"台東":[22.7554,121.15],"基隆":[25.1276,121.7392],"澎湖":[23.5655,119.5863],"金門":[24.4368,118.3171],"連江":[26.1605,119.9517]}[county];if(!c)return;const u="https://api.open-meteo.com/v1/forecast?latitude="+c[0]+"&longitude="+c[1]+"&current=temperature_2m&hourly=precipitation_probability&forecast_days=1&timezone=Asia%2FTaipei";fetch(u).then(r=>r.json()).then(d=>{const i=Math.max(0,d.hourly.time.findIndex(t=>new Date(t)>=new Date()));const arr=d.hourly.precipitation_probability.slice(i,i+6).filter(Number.isFinite);setWeather({temp:d.current.temperature_2m,pop:arr.length?Math.max(...arr):null})}).catch(()=>setWeather(null))},[county]);
 
  const pool=useMemo(()=>{
@@ -65,6 +68,7 @@ function App(){
        <button className="secondary" onClick={()=>setResult(null)}>修改條件</button>
      </>}
    </section>}
- {notice&&<div className="toast" onClick={()=>setNotice("")}>{notice}</div>}\n </main>
+ {notice&&<div className="toast" onClick={()=>setNotice("")}>{notice}</div>}
+ </main>
 }
 createRoot(document.getElementById("root")).render(<App/>);
