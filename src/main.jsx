@@ -23,11 +23,28 @@ function App(){
  const [open,setOpen]=useState(false);
  const [when,setWhen]=useState("now");
  const [notice,setNotice]=useState("");
+ const [showPreview,setShowPreview]=useState(false);
+ const [sharedPlace,setSharedPlace]=useState(null);
  const [userCoords,setUserCoords]=useState(null);
  const [maxDrive,setMaxDrive]=useState(30);
 
  useEffect(()=>{
-   Promise.all([fetch("/data/places.production.json").then(r=>r.json()),fetch("/data/places.json").then(r=>r.json())]).then(([prod,cand])=>{setPlaces((prod.records||[]).map(normalizePlace));setCandidatePlaces((cand.records||[]).map(normalizePlace))});
+   Promise.all([fetch("/data/places.production.json").then(r=>r.json()),fetch("/data/places.json").then(r=>r.json())]).then(([prod,cand])=>{
+     const pp=(prod.records||[]).map(normalizePlace), cp=(cand.records||[]).map(normalizePlace);
+     setPlaces(pp);setCandidatePlaces(cp);
+     const m=location.pathname.match(/^\/r\/([^/]+)/);
+     if(m){
+       const id=decodeURIComponent(m[1]);
+       const q=new URLSearchParams(location.search);
+       const found=pp.find(p=>p.id===id);
+       if(found){
+         const qa=(q.get("ages")||"").split(",").filter(Boolean); if(qa.length)setAges(qa);
+         if(q.get("county"))setCounty(q.get("county"));
+         if(q.get("when"))setWhen(q.get("when"));
+         setSharedPlace(found);
+       }
+     }
+   });
    try{
      const saved=JSON.parse(localStorage.getItem("jtw-family")||"null");
      if(saved?.ages?.length)setAges(saved.ages);
@@ -64,7 +81,11 @@ function App(){
  const production=useMemo(()=>evaluateRecommendations(places,currentPrefs),[places,currentPrefs]);
  const preview=useMemo(()=>evaluateCandidatePreview(candidatePlaces,currentPrefs),[candidatePlaces,currentPrefs]);
 
- function decide(){setExcluded([]);setResult(production.hero?production:{...preview,preview:true,fallbackNote:"目前此條件尚無通過正式驗證的 Production 資料。以下僅為候選資料預覽，不提供精確導航、營業判定或設施保證。"})}
+ function decide(){setExcluded([]);setShowPreview(false);setResult(production)}
+ function relaxPaid(){setPrefs(v=>v.filter(x=>x!=="free").length?v.filter(x=>x!=="free"):["auto"]);setResult(null);setOpen(true)}
+ function relaxOutdoor(){setPrefs(v=>{const n=v.filter(x=>x!=="indoor");return n.length?n:["outdoor"]});setResult(null);setOpen(true)}
+ function previewCandidates(){setShowPreview(true);setResult({...preview,preview:true,fallbackNote:"尚未完成官方驗證，只供你看看可能的方向。出發前請自行確認。"});}
+
  function toggleAge(a){setAges(v=>v.includes(a)?(v.length===1?v:v.filter(x=>x!==a)):[...v,a])}
  function togglePref(p){if(p==="auto"){setPrefs(["auto"]);return}setPrefs(v=>{const next=v.filter(x=>x!=="auto");return next.includes(p)?(next.length===1?["auto"]:next.filter(x=>x!==p)):[...next,p]})}
  function reroll(){
@@ -75,7 +96,7 @@ function App(){
    const nextPrefs={...currentPrefs,excludedPlaceIds:nextExcluded};
    const prod=evaluateRecommendations(places,nextPrefs);
    const cand=evaluateCandidatePreview(candidatePlaces,nextPrefs);
-   setResult(prod.hero?prod:{...cand,preview:true,fallbackNote:"正式驗證資料不足，以下為下一組候選資料預覽。"});
+   setResult(prod.hero?prod:{hero:null,alternatives:[],fallbackNote:prod.fallbackNote});
  }
  function share(p){
    const url=location.origin+"/r/"+p.id+"?ages="+ages.join(",")+"&county="+encodeURIComponent(county)+"&when="+when;
@@ -88,6 +109,8 @@ function App(){
  }
  function typeLabel(p){return p.category==="park"?"特色公園":p.indoor&&!p.outdoor?"室內":"親子景點"}
  function reason(p){return result?.preview?"候選資料符合目前的基本年齡與玩法條件；正式營業、座標與設施仍待官方驗證。":generateEvidenceReason(p,currentPrefs)}
+
+ if(sharedPlace){return <main className="app"><header className="top"><div className="brand">今天玩什麼</div></header><section className="results shared"><div className="summary">另一半傳來的出遊提案</div><article className="resultCard"><div className="illustration"><span>{typeLabel(sharedPlace)}</span></div><div className="body"><h2>{sharedPlace.name}</h2><p className="muted">{sharedPlace.county}・{typeLabel(sharedPlace)}・{priceLabel(sharedPlace)}</p><div className="why"><b>為什麼適合：</b> {generateEvidenceReason(sharedPlace,currentPrefs)}</div><div className="actions"><button onClick={()=>map(sharedPlace)}><MapPin size={18}/>直接導航</button><button onClick={()=>share(sharedPlace)}><Share2 size={18}/>再分享</button></div><div className="trustBox"><b>資料來源</b><span>{sharedPlace.sourceLabel||sharedPlace.trustLayer?.dataSource||"官方資料"}</span><span>{sharedPlace.trustLayer?.lastVerifiedAt?"驗證日 "+sharedPlace.trustLayer.lastVerifiedAt:"驗證日待補"}</span>{sharedPlace.trustLayer?.officialUrl&&<a href={sharedPlace.trustLayer.officialUrl} target="_blank" rel="noreferrer">查看官方資料</a>}<a href={"mailto:report@jintian-wanshenme.com?subject="+encodeURIComponent("景點資料回報："+sharedPlace.name)}>資料不對？回報</a></div></div></article><button className="secondary" onClick={()=>{history.pushState({},"","/");setSharedPlace(null)}}>我也要重新決定</button></section></main>}
 
  return <main className="app">
    <header className="top"><div className="brand">今天玩什麼</div><div className="weather">{county}<br/>{weather?Math.round(weather.temp)+"°C・降雨 "+weather.pop+"%":"天氣讀取中"}</div></header>
@@ -105,11 +128,11 @@ function App(){
      </div>}
    </section>}
    {result&&<section className="results">
-     {!result.hero?<div className="empty"><h3>目前沒有符合條件的結果</h3><p>{result.fallbackNote}</p><button onClick={()=>setResult(null)}>返回調整</button></div>:<>
+     {!result.hero?<div className="empty"><h3>這個條件目前沒有通過驗證的選擇</h3><p>{result.fallbackNote}</p><div className="emptyActions">{prefs.includes("indoor")&&<button onClick={relaxOutdoor}>改看戶外／可接受淋一點雨</button>}{prefs.includes("free")&&<button onClick={relaxPaid}>接受門票</button>}<button onClick={()=>setResult(null)}>返回調整</button></div>{preview.hero&&<button className="previewLink" onClick={previewCandidates}>看看尚未驗證的候選方向</button>}</div>:<>
        <div className="summary">{ages.join("＋")}歲・{county}・{({now:"現在",afternoon:"今天下午",tomorrow:"明天",weekend:"這週末"})[when]}・{prefs.includes("auto")?"自動最適":prefs.join("＋")}</div>
        {result.preview&&<div className="candidateNotice"><ShieldCheck size={18}/><div><b>候選資料預覽</b><br/>{result.fallbackNote}</div></div>}
        <h3>{result.preview?"目前最符合的候選":"今天就去這裡"}</h3>
-       <article className="resultCard"><div className="illustration"><span>{typeLabel(result.hero)}</span></div><div className="body"><h2>{result.hero.name}</h2><p className="muted">{result.hero.county}・{typeLabel(result.hero)}・{priceLabel(result.hero)}{result.hero._driveMinutes!=null?"・預估 "+result.hero._driveMinutes+" 分鐘":""}</p><div className="why"><b>為什麼推薦：</b> {reason(result.hero)}</div><div className="actions"><button onClick={()=>map(result.hero)}><MapPin size={18}/>{result.preview?"座標待驗證":"直接導航"}</button><button onClick={()=>share(result.hero)}><Share2 size={18}/>傳給另一半</button></div><button className="reroll" onClick={reroll}><RotateCcw size={18}/>不要這個，再幫我決定一次</button><p className="trust">{result.preview?"此資料尚未進入 Production Recommendation Pool。":"資料已通過 Production 驗證。"} {result.hero.trustLayer?.lastVerifiedAt?"最後驗證："+result.hero.trustLayer.lastVerifiedAt:""}</p></div></article>
+       <article className="resultCard"><div className="illustration"><span>{typeLabel(result.hero)}</span></div><div className="body"><h2>{result.hero.name}</h2><p className="muted">{result.hero.county}・{typeLabel(result.hero)}・{priceLabel(result.hero)}{result.hero._driveMinutes!=null?"・預估 "+result.hero._driveMinutes+" 分鐘":""}</p><div className="why"><b>為什麼推薦：</b> {reason(result.hero)}</div><div className="actions"><button onClick={()=>map(result.hero)}><MapPin size={18}/>{result.preview?"座標待驗證":"直接導航"}</button><button onClick={()=>share(result.hero)}><Share2 size={18}/>傳給另一半</button></div><button className="reroll" onClick={reroll}><RotateCcw size={18}/>不要這個，再幫我決定一次</button>{result.preview?<p className="trust">僅供參考・尚未完成官方驗證</p>:<div className="trustBox"><b>已驗證資料</b><span>{result.hero.sourceLabel||result.hero.trustLayer?.dataSource||"官方資料"}</span>{result.hero.trustLayer?.lastVerifiedAt&&<span>驗證日 {result.hero.trustLayer.lastVerifiedAt}</span>}{result.hero.trustLayer?.officialUrl&&<a href={result.hero.trustLayer.officialUrl} target="_blank" rel="noreferrer">官方來源</a>}<a href={"mailto:report@jintian-wanshenme.com?subject="+encodeURIComponent("景點資料回報："+result.hero.name)}>資料不對？回報</a></div>}</div></article>
        <h3>備選</h3>{(result.alternatives||[]).map(p=><article className="alt" key={p.id}><div><b>{p.name}</b><p>{typeLabel(p)}・{priceLabel(p)}</p></div><div className="altActions"><button onClick={()=>map(p)}>導航</button><button onClick={()=>share(p)}>分享</button></div></article>)}
        {(result.alternatives||[]).length<2&&<div className="alt"><div><b>沒有更多安全備選</b><p>系統不會跨縣市或放寬硬條件湊數。</p></div></div>}
        <button className="secondary" onClick={()=>setResult(null)}>修改條件</button>
