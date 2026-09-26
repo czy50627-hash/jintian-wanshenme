@@ -89,7 +89,7 @@ function App(){
  const production=useMemo(()=>evaluateRecommendations(places,currentPrefs),[places,currentPrefs]);
  const preview=useMemo(()=>evaluateCandidatePreview(candidatePlaces,currentPrefs),[candidatePlaces,currentPrefs]);
 
- function decide(){setExcluded([]);setResult(production)}
+ function decide(){setExcluded([]);setResult(production.hero?production:(preview.hero?{...preview,preview:true,fallbackNote:"目前正式驗證資料庫尚未完成，先提供候選資料預覽；名稱與分類可供參考，座標、營業與設施尚未驗證。"}:production))}
  function toggleAge(a){setAges(v=>v.includes(a)?(v.length===1?v:v.filter(x=>x!==a)):[...v,a])}
  function togglePref(p){if(p==="auto"){setPrefs(["auto"]);return}setPrefs(v=>{const next=v.filter(x=>x!=="auto");return next.includes(p)?(next.length===1?["auto"]:next.filter(x=>x!==p)):[...next,p]})}
  function reroll(){if(!result?.hero)return;const ids=[result.hero,...(result.alternatives||[])].map(p=>p.id);const nextExcluded=[...new Set([...excluded,...ids])];setExcluded(nextExcluded);setResult(evaluateRecommendations(places,{...currentPrefs,excludedPlaceIds:nextExcluded}))}
@@ -147,15 +147,15 @@ function App(){
      {!result.hero ? <div className="empty prettyEmpty"><div className="emptyArt"><Umbrella size={38}/></div><h3>這個條件目前沒有通過驗證的選擇</h3><p>{result.fallbackNote}</p><div className="emptyActions">{prefs.includes("indoor")&&<button onClick={()=>{setPrefs(["outdoor"]);setResult(null)}}>改看戶外</button>}{prefs.includes("free")&&<button onClick={()=>{setPrefs(v=>v.filter(x=>x!=="free"));setResult(null)}}>接受門票</button>}<button onClick={()=>setResult(null)}>重新調整</button></div>{preview.hero&&<button className="previewLink" onClick={()=>setResult({...preview,preview:true,fallbackNote:"尚未完成官方驗證，只供參考。"})}>看看尚未驗證的候選方向</button>}</div> : <>
        <div className="resultIntro"><div className="avatarMom"><Baby size={25}/></div><div><b>根據你選的條件</b><span>今天最適合的行程是…</span></div><Heart size={21}/></div>
        <article className="heroResultCard">
-         <div className="heroImageWrap"><PlaceIllustration kind={result.hero.category}/><span className="crownBadge">首選推薦</span></div>
+         <div className="heroImageWrap"><PlaceIllustration kind={result.hero.category}/><span className="crownBadge">{result.preview?"候選預覽":"首選推薦"}</span></div>
          <div className="heroResultBody">
            <h1 onClick={()=>showDetail(result.hero)}>{result.hero.name}</h1><p>{result.hero.county}・{typeLabel(result.hero)}</p>
            <div className="quickLine"><Car size={18}/>車程約 {result.hero._driveMinutes||"—"} 分鐘 <button onClick={()=>showDetail(result.hero)}><MapPin size={17}/>查看地圖</button></div>
            <div className="miniStats"><div><span>適合年齡</span><b>{ageText(result.hero)}</b></div><div><span>費用</span><b>{priceLabel(result.hero)}</b></div><div><span>建議停留</span><b>{result.hero.durationMin?Math.round(result.hero.durationMin/60)+"–3小時":"約2小時"}</b></div></div>
            <div className="ratingRow"><div><span>放電程度</span><b>{"★".repeat(Math.min(5,result.hero.energyLevel||3))}</b></div><div><span>爸媽輕鬆度</span><b>{"★".repeat(Math.max(2,5-(result.hero.parentEffort||2)))}</b></div></div>
-           <div className="amenityLine"><span><ParkingCircle/>好停車</span><span><Baby/>推車友善</span><span><Utensils/>附近有美食</span></div>
-           <div className="whyBox"><h3>為什麼推薦給你？</h3>{reason(result.hero).split("・").slice(0,4).map((r,i)=><p key={i}><span>✓</span>{r}</p>)}</div>
-           <div className="mainActions"><button className="navPrimary" onClick={()=>map(result.hero)}><Navigation size={19}/>導航去這裡</button><button className="shareSecondary" onClick={()=>share(result.hero)}><Share2 size={18}/>傳給另一半</button></div>
+           <div className="amenityLine">{result.hero.amenities?.parking==="easy"&&<span><ParkingCircle/>好停車</span>}{result.hero.amenities?.stroller&&<span><Baby/>推車友善</span>}{result.hero.amenities?.foodNearby&&<span><Utensils/>附近有美食</span>}{result.hero.amenities?.parking!=="easy"&&!result.hero.amenities?.stroller&&!result.hero.amenities?.foodNearby&&<span>設施資訊待驗證</span>}</div>
+           <div className="whyBox"><h3>{result.preview?"為什麼先讓你參考？":"為什麼推薦給你？"}</h3>{(result.preview?"符合你目前選的縣市、年齡與玩法條件；但仍待官方逐筆驗證。":reason(result.hero)).split("・").slice(0,4).map((r,i)=><p key={i}><span>✓</span>{r}</p>)}</div>{result.preview&&<div className="previewWarning">候選資料僅供 Demo 參考，不代表已確認營業、精確位置或設施。</div>}
+           <div className="mainActions"><button className="navPrimary" onClick={()=>map(result.hero)} disabled={result.preview||!result.hero.isCoordinatePrecise}><Navigation size={19}/>{result.preview?"座標待驗證":"導航去這裡"}</button><button className="shareSecondary" onClick={()=>share(result.hero)}><Share2 size={18}/>傳給另一半</button></div>
          </div>
        </article>
        <div className="altsHeader"><h2>另外兩個備選方案</h2><button onClick={reroll}><RotateCcw size={16}/>換一批推薦</button></div>
