@@ -38,6 +38,7 @@ function matchesPlayStyles(place,styles){
 export function evaluateRecommendations(pool,prefs){
   const survivors=pool.filter(place=>{
     if(place.verificationStatus!=="verified" || place.publishStatus!=="published") return false;
+    if(place.temporaryClosed===true) return false;
     if(place.isCoordinatePrecise!==true) return false;
     if(place.county!==prefs.selectedCounty) return false;
     if(prefs.excludedPlaceIds.includes(place.id)) return false;
@@ -74,7 +75,15 @@ export function evaluateRecommendations(pool,prefs){
     if(place.amenities?.parking==="easy") score+=4;
     if(place.amenities?.diaperStation || place.amenities?.nursingRoom) score+=6;
 
-    if(place.category==="park") score+=4;
+    if(place.category==="park") score+=2;
+    const pg=place.playground||{};
+    const equipment=[pg.officialEquipmentText,pg.playgroundType].filter(Boolean).join(" ");
+    if(equipment && !/unknown|未知/i.test(equipment)) score+=10;
+    if(/共融/.test(equipment)) score+=8;
+    if(/攀爬|攀網|滑索|高塔|溜滑梯|鞦韆|沙坑/.test(equipment)) score+=6;
+    if(place.covered||pg.coveredPlayArea===true) score+=4;
+    if(pg.toilet===true) score+=3;
+    if(pg.shadeLevel==="high") score+=3;
     if(place.socialPopularity) score+=Math.min(8,place.socialPopularity/15);
     return {...place,_score:score,_driveMinutes:drive};
   }).sort((a,b)=>b._score-a._score);
