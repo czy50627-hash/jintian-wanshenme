@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://jintian-wanshenme-demo.vercel.app/sitemap.xml
