@@ -11,7 +11,10 @@
     "data:density": "node scripts/density-report.mjs",
     "data:production": "node scripts/build-production-data.mjs",
     "test:data": "node test/density-regression.test.mjs",
-    "data:all": "npm run data:taipei-parks && npm run data:production && npm run data:density && npm run test:data"
+    "data:all": "npm run data:taipei-parks && npm run data:production && npm run data:density && npm run test:data",
+    "data:audit": "node scripts/audit-data.mjs",
+    "test:integrity": "node test/production-integrity.test.mjs",
+    "check": "npm run test:integrity && npm run test:data && npm run build"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
