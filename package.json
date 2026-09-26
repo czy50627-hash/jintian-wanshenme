@@ -7,8 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "data:taipei-parks": "node scripts/build-taipei-parks.mjs",
-    "data:density": "node scripts/density-report.mjs"
+    "data:taipei-parks": "node scripts/ingest-taipei-parks.mjs",
+    "data:density": "node scripts/density-report.mjs",
+    "data:production": "node scripts/build-production-data.mjs",
+    "test:data": "node test/density-regression.test.mjs",
+    "data:all": "npm run data:taipei-parks && npm run data:production && npm run data:density && npm run test:data"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
