@@ -1,0 +1,2 @@
+# 今天玩什麼
+全台親子出遊決策工具。公園為一級推薦類別。Production 推薦只使用 verified/published 資料；社群熱門度僅作 Soft Score。資料不足不跨縣市硬補。
