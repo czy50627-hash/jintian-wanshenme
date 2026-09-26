@@ -4,6 +4,7 @@ import {MapPin,Share2,RotateCcw,ChevronDown,ShieldCheck} from "lucide-react";
 import {evaluateRecommendations,evaluateCandidatePreview} from "./engine/recommend.js";
 import {generateEvidenceReason} from "./engine/reasonGenerator.js";
 import {normalizePlace} from "./lib/normalizePlace.js";
+import {priceLabel} from "./lib/pricing.js";
 import "./styles.css";
 
 const AGES=["0-2","3-5","6-8","9-12"];
@@ -108,8 +109,8 @@ function App(){
        <div className="summary">{ages.join("＋")}歲・{county}・{({now:"現在",afternoon:"今天下午",tomorrow:"明天",weekend:"這週末"})[when]}・{prefs.includes("auto")?"自動最適":prefs.join("＋")}</div>
        {result.preview&&<div className="candidateNotice"><ShieldCheck size={18}/><div><b>候選資料預覽</b><br/>{result.fallbackNote}</div></div>}
        <h3>{result.preview?"目前最符合的候選":"今天就去這裡"}</h3>
-       <article className="resultCard"><div className="illustration"><span>{typeLabel(result.hero)}</span></div><div className="body"><h2>{result.hero.name}</h2><p className="muted">{result.hero.county}・{typeLabel(result.hero)}{result.hero._driveMinutes!=null?"・預估 "+result.hero._driveMinutes+" 分鐘":""}</p><div className="why"><b>為什麼推薦：</b> {reason(result.hero)}</div><div className="actions"><button onClick={()=>map(result.hero)}><MapPin size={18}/>{result.preview?"座標待驗證":"直接導航"}</button><button onClick={()=>share(result.hero)}><Share2 size={18}/>傳給另一半</button></div><button className="reroll" onClick={reroll}><RotateCcw size={18}/>不要這個，再幫我決定一次</button><p className="trust">{result.preview?"此資料尚未進入 Production Recommendation Pool。":"資料已通過 Production 驗證。"} {result.hero.trustLayer?.lastVerifiedAt?"最後驗證："+result.hero.trustLayer.lastVerifiedAt:""}</p></div></article>
-       <h3>備選</h3>{(result.alternatives||[]).map(p=><article className="alt" key={p.id}><div><b>{p.name}</b><p>{typeLabel(p)}・{p.isFree?"免費":"付費/票價待驗證"}</p></div><div className="altActions"><button onClick={()=>map(p)}>導航</button><button onClick={()=>share(p)}>分享</button></div></article>)}
+       <article className="resultCard"><div className="illustration"><span>{typeLabel(result.hero)}</span></div><div className="body"><h2>{result.hero.name}</h2><p className="muted">{result.hero.county}・{typeLabel(result.hero)}・{priceLabel(result.hero)}{result.hero._driveMinutes!=null?"・預估 "+result.hero._driveMinutes+" 分鐘":""}</p><div className="why"><b>為什麼推薦：</b> {reason(result.hero)}</div><div className="actions"><button onClick={()=>map(result.hero)}><MapPin size={18}/>{result.preview?"座標待驗證":"直接導航"}</button><button onClick={()=>share(result.hero)}><Share2 size={18}/>傳給另一半</button></div><button className="reroll" onClick={reroll}><RotateCcw size={18}/>不要這個，再幫我決定一次</button><p className="trust">{result.preview?"此資料尚未進入 Production Recommendation Pool。":"資料已通過 Production 驗證。"} {result.hero.trustLayer?.lastVerifiedAt?"最後驗證："+result.hero.trustLayer.lastVerifiedAt:""}</p></div></article>
+       <h3>備選</h3>{(result.alternatives||[]).map(p=><article className="alt" key={p.id}><div><b>{p.name}</b><p>{typeLabel(p)}・{priceLabel(p)}</p></div><div className="altActions"><button onClick={()=>map(p)}>導航</button><button onClick={()=>share(p)}>分享</button></div></article>)}
        {(result.alternatives||[]).length<2&&<div className="alt"><div><b>沒有更多安全備選</b><p>系統不會跨縣市或放寬硬條件湊數。</p></div></div>}
        <button className="secondary" onClick={()=>setResult(null)}>修改條件</button>
      </>}
