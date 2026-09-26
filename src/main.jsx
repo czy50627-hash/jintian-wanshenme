@@ -38,7 +38,7 @@ function App(){
   }).sort((a,b)=>b.score-a.score);
  },[places,county,ages,prefs,weather,excluded]);
 
- function decide(){setExcluded([]);setResult({primary:pool[0]||null,alts:pool.slice(1,3)})}
+ function decide(){setResult({primary:pool[0]||null,alts:pool.slice(1,3)})}
  function toggleAge(a){setAges(v=>v.includes(a)?(v.length===1?v:v.filter(x=>x!==a)):[...v,a])}
  function togglePref(p){if(p==="auto"){setPrefs(["auto"]);return}setPrefs(v=>{const next=v.filter(x=>x!=="auto");return next.includes(p)?(next.length===1?["auto"]:next.filter(x=>x!==p)):[...next,p]})}
  function reroll(){if(!result?.primary)return;const ids=[result.primary,...result.alts].map(p=>p.id);const nextExcluded=[...new Set([...excluded,...ids])];setExcluded(nextExcluded);const next=places.filter(p=>p.county===county&&!nextExcluded.includes(p.id)&&ages.some(a=>p.ageTags.includes(a))&&(!prefs.includes("indoor")||p.indoor)&&(!prefs.includes("outdoor")||p.outdoor)&&(!prefs.includes("free")||p.isFree)&&!(prefs.includes("auto")&&weather?.pop>=40&&p.outdoor&&!p.covered)).map(p=>({...p,score:(ages.filter(a=>p.ageTags.includes(a)).length/ages.length)*45+p.socialPopularity*.3+(p.multiKidFriendly?8:0)+(p.category==="park"?8:0)+(weather?.pop>=40&&p.indoor?8:0)})).sort((a,b)=>b.score-a.score);setResult({primary:next[0]||null,alts:next.slice(1,3)})}
