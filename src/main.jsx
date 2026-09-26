@@ -24,28 +24,49 @@ const CENTERS={"台北":[25.0478,121.5319],"新北":[25.012,121.4657],"桃園":[
 function HeroIllustration(){
   return <svg viewBox="0 0 390 260" className="heroArt" aria-hidden="true">
     <defs>
-      <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1"><stop stopColor="#94dcff"/><stop offset="1" stopColor="#eaf8ff"/></linearGradient>
-      <linearGradient id="sea" x1="0" x2="1"><stop stopColor="#71cfe7"/><stop offset="1" stopColor="#80dfcf"/></linearGradient>
-      <linearGradient id="hill" x1="0" x2="1"><stop stopColor="#84c879"/><stop offset="1" stopColor="#b8df83"/></linearGradient>
+      <linearGradient id="heroSky" x1="0" x2="0" y1="0" y2="1"><stop stopColor="#84d7ff"/><stop offset="1" stopColor="#dff7ff"/></linearGradient>
+      <linearGradient id="heroWater" x1="0" x2="1"><stop stopColor="#75d1ea"/><stop offset="1" stopColor="#86dfcf"/></linearGradient>
+      <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#40666b" floodOpacity=".18"/></filter>
     </defs>
-    <rect width="390" height="260" rx="32" fill="url(#sky)"/>
-    <g opacity=".9" fill="#fff"><ellipse cx="54" cy="45" rx="36" ry="16"/><ellipse cx="82" cy="39" rx="30" ry="20"/><ellipse cx="325" cy="52" rx="38" ry="17"/></g>
-    <path d="M0 145 Q55 110 110 140 T215 135 T390 125 V260 H0Z" fill="#8bcf8d"/>
-    <path d="M0 173 Q70 142 125 170 T245 160 T390 155 V260 H0Z" fill="url(#hill)"/>
-    <path d="M0 202 Q98 178 198 201 T390 190 V260 H0Z" fill="url(#sea)" opacity=".86"/>
-    <g transform="translate(28 118)"><path d="M12 70 Q30 20 57 70Z" fill="#5ea866"/><circle cx="34" cy="27" r="13" fill="#397d46"/><path d="M63 69 Q83 12 112 69Z" fill="#68b56c"/><circle cx="87" cy="24" r="14" fill="#438d4d"/></g>
-    <g transform="translate(198 70)" stroke="#603c2e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="36" cy="56" r="24" fill="#f0b07d"/><path d="M18 49 q16-31 39-5 q-14-6-38 12" fill="#784b37"/>
-      <path d="M19 81 q17-10 34 0 l10 43 h-54z" fill="#f5a26d"/>
-      <circle cx="95" cy="83" r="19" fill="#f4b47f"/><path d="M80 77 q12-25 31-3 q-16-7-29 9" fill="#6f4b39"/>
-      <path d="M80 101 q16-8 29 1 l8 33H73z" fill="#ffd368"/>
-      <circle cx="143" cy="93" r="18" fill="#f1af7e"/><path d="M129 88 q10-21 28-4" fill="#704a36"/>
-      <path d="M128 109 q13-7 27 0 l8 30h-41z" fill="#70c2db"/>
-      <circle cx="29" cy="55" r="2.5"/><circle cx="44" cy="55" r="2.5"/><path d="M31 66 q7 6 14 0" fill="none"/>
-      <circle cx="90" cy="83" r="2"/><circle cx="101" cy="83" r="2"/><path d="M91 91 q5 4 10 0" fill="none"/>
-      <circle cx="138" cy="93" r="2"/><circle cx="148" cy="93" r="2"/><path d="M139 101 q4 3 9 0" fill="none"/>
+    <rect width="390" height="260" rx="30" fill="url(#heroSky)"/>
+    <g fill="#fff" opacity=".95">
+      <path d="M15 50c9-14 22-19 37-12 10-17 36-15 44 3 19-4 31 6 35 19H9c0-4 2-7 6-10Z"/>
+      <path d="M272 44c10-16 25-21 40-11 9-16 31-14 38 3 15-3 28 5 33 17H268c0-4 1-6 4-9Z"/>
     </g>
-    <g stroke="#e7b420" strokeWidth="4" strokeLinecap="round"><path d="M310 94 l10-18"/><path d="M326 100 l21-7"/><path d="M302 105 l-18-7"/></g>
+    <path d="M0 153 Q68 112 128 151 T260 143 T390 138 V260 H0Z" fill="#80c77a"/>
+    <path d="M0 179 Q62 145 134 174 T268 165 T390 160 V260 H0Z" fill="#a8da82"/>
+    <path d="M0 203 Q92 177 192 200 T390 191 V260 H0Z" fill="url(#heroWater)" opacity=".96"/>
+    <path d="M265 160 q18-30 32-6 q18-20 34 3 q14-12 31 6 v29h-97z" fill="#79bc72" opacity=".85"/>
+
+    <g transform="translate(22 150)" filter="url(#softShadow)">
+      <circle cx="0" cy="38" r="18" fill="#e6a25f"/><path d="M-12 24 l-8-13 15 6M10 24 l10-11-2 16" fill="#bc7640"/>
+      <circle cx="-5" cy="36" r="2.5" fill="#2a3b3d"/><circle cx="7" cy="36" r="2.5" fill="#2a3b3d"/><path d="M-2 43 q6 5 12 0" fill="none" stroke="#2a3b3d" strokeWidth="2.5" strokeLinecap="round"/>
+      <ellipse cx="4" cy="62" rx="26" ry="18" fill="#eab268"/><path d="M-9 66 q15 9 31 0" fill="none" stroke="#fff" strokeWidth="7" strokeLinecap="round"/>
+    </g>
+
+    <g transform="translate(120 92)" stroke="#5b3f35" strokeWidth="2.7" strokeLinecap="round" strokeLinejoin="round" filter="url(#softShadow)">
+      <circle cx="38" cy="39" r="25" fill="#f0b180"/><path d="M18 34 q10-28 29-27 q23 4 28 27 q-12-10-26-9 q-20 2-31 9" fill="#7e503a"/>
+      <path d="M13 62 q23-13 49 1 l12 72H2Z" fill="#f6a06f"/>
+      <path d="M5 89 q-28 9-42 33" fill="none"/><path d="M63 86 q25 10 42 35" fill="none"/>
+      <circle cx="31" cy="39" r="2.4" fill="#2d3436" stroke="none"/><circle cx="47" cy="39" r="2.4" fill="#2d3436" stroke="none"/><path d="M32 50 q7 7 15 0" fill="none"/>
+
+      <g transform="translate(78 36)">
+        <circle cx="22" cy="31" r="20" fill="#f2b383"/><path d="M7 27 q9-24 28-18 q13 6 15 22 q-17-10-42-4" fill="#6f4937"/>
+        <path d="M4 51 q20-10 39 1 l8 51H-4Z" fill="#ffd36a"/>
+        <path d="M8 18 q6-12 12-17" fill="none"/><path d="M20 3 q5-6 12 0" fill="none"/>
+        <circle cx="17" cy="31" r="2" fill="#2d3436" stroke="none"/><circle cx="29" cy="31" r="2" fill="#2d3436" stroke="none"/><path d="M17 40 q6 5 12 0" fill="none"/>
+      </g>
+
+      <g transform="translate(127 50)">
+        <circle cx="20" cy="28" r="18" fill="#f1b17f"/><path d="M7 24 q8-20 25-15 q11 4 14 18 q-16-8-38-3" fill="#73503a"/>
+        <path d="M3 47 q18-9 35 0 l8 43H-4Z" fill="#6fc2dc"/>
+        <circle cx="16" cy="28" r="2" fill="#2d3436" stroke="none"/><circle cx="27" cy="28" r="2" fill="#2d3436" stroke="none"/><path d="M16 37 q6 4 11 0" fill="none"/>
+      </g>
+    </g>
+
+    <g transform="translate(300 78)" stroke="#d8a20a" strokeWidth="4" strokeLinecap="round">
+      <path d="M0 18 7 0"/><path d="M14 26 35 19"/><path d="M-8 31 -26 24"/>
+    </g>
   </svg>
 }
 
@@ -145,7 +166,7 @@ function App(){
    <header className="appHeader"><div className="logoText">今天玩什麼<span>✦</span></div><button className="menuBtn"><Menu size={25}/></button></header>
 
    {!result ? <>
-     <section className="introHero"><HeroIllustration/><div className="heroCopy"><h1>不知道去哪？<br/><strong>今天玩什麼</strong><br/>幫你決定！</h1><p>輸入幾個條件，<br/>3 秒給你今天最適合的親子行程！</p></div></section>
+     <section className="introHero"><div className="heroCopy"><h1>不知道去哪？<br/><strong>今天玩什麼</strong><br/>幫你決定！</h1><p>輸入幾個條件，3 秒給你今天最適合的親子行程！</p></div><div className="heroArtwork"><HeroIllustration/></div></section>
      <section className="decisionPanel">
        <h2>孩子幾歲？ <span>（可複選）</span></h2>
        <div className="ageChoiceGrid">{AGES.map(a=><button key={a.id} className={ages.includes(a.id)?"choiceCard selected":"choiceCard"} onClick={()=>toggleAge(a.id)}><div className="kidBadge"><Baby size={22}/></div><div><b>{a.label}</b><small>{a.sub}</small></div></button>)}</div>
