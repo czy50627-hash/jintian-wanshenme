@@ -11,7 +11,7 @@ const COUNTIES=["台北","新北","桃園","新竹","苗栗","台中","彰化","
 const CENTERS={"台北":[25.0478,121.5319],"新北":[25.012,121.4657],"桃園":[24.9937,121.301],"新竹":[24.8138,120.9675],"苗栗":[24.5602,120.8214],"台中":[24.1477,120.6736],"彰化":[24.0756,120.544],"南投":[23.9609,120.9719],"雲林":[23.7092,120.4313],"嘉義":[23.4801,120.4491],"台南":[22.9999,120.227],"高雄":[22.6273,120.3014],"屏東":[22.6761,120.4942],"宜蘭":[24.7021,121.7378],"花蓮":[23.9911,121.6112],"台東":[22.7554,121.15],"基隆":[25.1276,121.7392],"澎湖":[23.5655,119.5863],"金門":[24.4368,118.3171],"連江":[26.1605,119.9517]};
 
 function App(){
- const [places,setPlaces]=useState([]);
+ const [places,setPlaces]=useState([]);\n const [candidatePlaces,setCandidatePlaces]=useState([]);
  const [ages,setAges]=useState(["3-5"]);
  const [county,setCounty]=useState("台北");
  const [prefs,setPrefs]=useState(["auto"]);
@@ -25,7 +25,7 @@ function App(){
  const [maxDrive,setMaxDrive]=useState(30);
 
  useEffect(()=>{
-   fetch("/data/places.json").then(r=>r.json()).then(d=>setPlaces((d.records||[]).map(normalizePlace)));
+   Promise.all([fetch("/data/places.production.json").then(r=>r.json()),fetch("/data/places.json").then(r=>r.json())]).then(([prod,cand])=>{setPlaces((prod.records||[]).map(normalizePlace));setCandidatePlaces((cand.records||[]).map(normalizePlace))});
    try{
      const saved=JSON.parse(localStorage.getItem("jtw-family")||"null");
      if(saved?.ages?.length)setAges(saved.ages);
@@ -60,7 +60,7 @@ function App(){
  }),[county,userCoords,ages,when,maxDrive,prefs,excluded,weather]);
 
  const production=useMemo(()=>evaluateRecommendations(places,currentPrefs),[places,currentPrefs]);
- const preview=useMemo(()=>evaluateCandidatePreview(places,currentPrefs),[places,currentPrefs]);
+ const preview=useMemo(()=>evaluateCandidatePreview(candidatePlaces,currentPrefs),[candidatePlaces,currentPrefs]);
 
  function decide(){setExcluded([]);setResult(production.hero?production:{...preview,preview:true,fallbackNote:"目前此條件尚無通過正式驗證的 Production 資料。以下僅為候選資料預覽，不提供精確導航、營業判定或設施保證。"})}
  function toggleAge(a){setAges(v=>v.includes(a)?(v.length===1?v:v.filter(x=>x!==a)):[...v,a])}
@@ -72,7 +72,7 @@ function App(){
    setExcluded(nextExcluded);
    const nextPrefs={...currentPrefs,excludedPlaceIds:nextExcluded};
    const prod=evaluateRecommendations(places,nextPrefs);
-   const cand=evaluateCandidatePreview(places,nextPrefs);
+   const cand=evaluateCandidatePreview(candidatePlaces,nextPrefs);
    setResult(prod.hero?prod:{...cand,preview:true,fallbackNote:"正式驗證資料不足，以下為下一組候選資料預覽。"});
  }
  function share(p){
