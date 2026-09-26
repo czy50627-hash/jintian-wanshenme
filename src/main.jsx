@@ -75,7 +75,7 @@ function App(){
      }
    });
    try{const saved=JSON.parse(localStorage.getItem("jtw-family")||"null");if(saved?.ages?.length)setAges(saved.ages);if(saved?.county)setCounty(saved.county);if(saved?.prefs?.length)setPrefs(saved.prefs);if(saved?.maxDrive)setMaxDrive(saved.maxDrive);if(saved?.transport)setTransport(saved.transport)}catch{}
-   if(navigator.geolocation) navigator.geolocation.getCurrentPosition(p=>setUserCoords({lat:p.coords.latitude,lng:p.coords.longitude}),()=>setUserCoords(null),{enableHighAccuracy:false,timeout:5000,maximumAge:600000});
+   requestLocation();
  },[]);
 
  useEffect(()=>{localStorage.setItem("jtw-family",JSON.stringify({ages,county,prefs,maxDrive,transport}))},[ages,county,prefs,maxDrive,transport]);
@@ -89,7 +89,7 @@ function App(){
  const production=useMemo(()=>evaluateRecommendations(places,currentPrefs),[places,currentPrefs]);
  const preview=useMemo(()=>evaluateCandidatePreview(candidatePlaces,currentPrefs),[candidatePlaces,currentPrefs]);
 
- function decide(){setExcluded([]);setResult(production.hero?production:(preview.hero?{...preview,preview:true,fallbackNote:"目前正式驗證資料庫尚未完成，先提供候選資料預覽；名稱與分類可供參考，座標、營業與設施尚未驗證。"}:production))}
+ function requestLocation(){if(!navigator.geolocation){setNotice("此裝置不支援定位");return}navigator.geolocation.getCurrentPosition(p=>{setUserCoords({lat:p.coords.latitude,lng:p.coords.longitude});setNotice("已取得位置，可估算距離")},()=>{setUserCoords(null);setNotice("未取得定位，仍可用縣市推薦")},{enableHighAccuracy:false,timeout:5000,maximumAge:600000})}\n function decide(){setExcluded([]);setResult(production.hero?production:(preview.hero?{...preview,preview:true,fallbackNote:"目前正式驗證資料庫尚未完成，先提供候選資料預覽；名稱與分類可供參考，座標、營業與設施尚未驗證。"}:production))}
  function toggleAge(a){setAges(v=>v.includes(a)?(v.length===1?v:v.filter(x=>x!==a)):[...v,a])}
  function togglePref(p){if(p==="auto"){setPrefs(["auto"]);return}setPrefs(v=>{const next=v.filter(x=>x!=="auto");return next.includes(p)?(next.length===1?["auto"]:next.filter(x=>x!==p)):[...next,p]})}
  function reroll(){if(!result?.hero)return;const ids=[result.hero,...(result.alternatives||[])].map(p=>p.id);const nextExcluded=[...new Set([...excluded,...ids])];setExcluded(nextExcluded);setResult(evaluateRecommendations(places,{...currentPrefs,excludedPlaceIds:nextExcluded}))}
@@ -129,37 +129,37 @@ function App(){
        <div className="ageChoiceGrid">{AGES.map(a=><button key={a.id} className={ages.includes(a.id)?"choiceCard selected":"choiceCard"} onClick={()=>toggleAge(a.id)}><div className="kidBadge"><Baby size={22}/></div><div><b>{a.label}</b><small>{a.sub}</small></div></button>)}</div>
        <h2>想怎麼玩？ <span>（可複選）</span></h2>
        <div className="playGrid">
-         {[["outdoor","戶外放電",TreePine],["indoor","室內玩樂",House],["free","免費景點",WalletCards],["auto","雨天備案",Umbrella]].map(([id,label,Icon])=><button key={id} className={prefs.includes(id)?"playCard selected":"playCard"} onClick={()=>togglePref(id)}><Icon size={24}/><b>{label}</b></button>)}
-         <button className="playCard"><CalendarDays size={24}/><b>本週活動</b></button><button className="playCard"><Star size={24}/><b>期間限定</b></button>
+         {[["outdoor","戶外放電",TreePine],["indoor","室內玩樂",House],["free","免費景點",WalletCards],["auto","自動最適",Umbrella]].map(([id,label,Icon])=><button key={id} className={prefs.includes(id)?"playCard selected":"playCard"} onClick={()=>togglePref(id)}><Icon size={24}/><b>{label}</b></button>)}
+         <button className="playCard disabledCard" disabled><CalendarDays size={24}/><b>本週活動</b><small>資料建置中</small></button><button className="playCard disabledCard" disabled><Star size={24}/><b>期間限定</b><small>資料建置中</small></button>
        </div>
        <h2>何時出發？</h2>
        <div className="whenGrid">{[["now","現在",SunMedium],["afternoon","今天下午",Clock3],["tomorrow","明天",CalendarDays],["weekend","這週末",CalendarDays]].map(([id,label,Icon])=><button key={id} className={when===id?"miniChoice selected":"miniChoice"} onClick={()=>setWhen(id)}><Icon size={21}/><span>{label}</span></button>)}</div>
        <h2>出發地點</h2>
-       <div className="locationRow"><button className="locationPrimary"><MapPin size={20}/>使用我的位置<small>{userCoords?"已取得大概位置":"未授權時使用縣市"}</small></button><select value={county} onChange={e=>setCounty(e.target.value)}>{COUNTIES.map(c=><option key={c}>{c}</option>)}</select></div>
+       <div className="locationRow"><button className="locationPrimary" onClick={requestLocation}><MapPin size={20}/>{userCoords?"重新取得位置":"使用我的位置"}<small>{userCoords?"已取得大概位置":"未授權時仍可用縣市推薦"}</small></button><select value={county} onChange={e=>setCounty(e.target.value)}>{COUNTIES.map(c=><option key={c}>{c}</option>)}</select></div>
        <h2>交通方式</h2>
-       <div className="transportRow"><button className={transport==="drive"?"transportChoice selected":"transportChoice"} onClick={()=>setTransport("drive")}><Car size={22}/>開車</button><button className={transport==="transit"?"transportChoice selected":"transportChoice"} onClick={()=>setTransport("transit")}><Bus size={22}/>大眾運輸</button></div>
+       <div className="transportRow"><button className={transport==="drive"?"transportChoice selected":"transportChoice"} onClick={()=>setTransport("drive")}><Car size={22}/>開車</button><button className="transportChoice disabledCard" disabled title="大眾運輸時間尚未接入推薦引擎"><Bus size={22}/>大眾運輸<small>即將支援</small></button></div>
        <h2>最多願意開多久？ <span>（單程）</span></h2>
        <div className="driveRow">{[15,30,45,60].map(v=><button key={v} className={maxDrive===v?"driveChip selected":"driveChip"} onClick={()=>setMaxDrive(v)}>{v}分</button>)}</div>
        <button className="decideBtn" onClick={decide}><span className="spark">✦</span>幫我決定今天玩什麼 <span>→</span></button>
      </section>
    </> : <section className="resultScreen">
-     <div className="weatherBanner"><MapPin size={19}/><div><b>{county}・{weather?"多雲時晴":"天氣讀取中"}</b><span>{weather?("降雨機率 "+weather.pop+"%・"+Math.round(weather.temp)+"°C"):"依選擇縣市自動判斷"}</span></div><SunMedium className="sunIcon"/></div>
+     <div className="weatherBanner"><MapPin size={19}/><div><b>{county}・{weather?"目前天氣":"天氣讀取中"}</b><span>{weather?("降雨機率 "+weather.pop+"%・"+Math.round(weather.temp)+"°C"):"依選擇縣市自動判斷"}</span></div><SunMedium className="sunIcon"/></div>
      {!result.hero ? <div className="empty prettyEmpty"><div className="emptyArt"><Umbrella size={38}/></div><h3>這個條件目前沒有通過驗證的選擇</h3><p>{result.fallbackNote}</p><div className="emptyActions">{prefs.includes("indoor")&&<button onClick={()=>{setPrefs(["outdoor"]);setResult(null)}}>改看戶外</button>}{prefs.includes("free")&&<button onClick={()=>{setPrefs(v=>v.filter(x=>x!=="free"));setResult(null)}}>接受門票</button>}<button onClick={()=>setResult(null)}>重新調整</button></div>{preview.hero&&<button className="previewLink" onClick={()=>setResult({...preview,preview:true,fallbackNote:"尚未完成官方驗證，只供參考。"})}>看看尚未驗證的候選方向</button>}</div> : <>
        <div className="resultIntro"><div className="avatarMom"><Baby size={25}/></div><div><b>根據你選的條件</b><span>今天最適合的行程是…</span></div><Heart size={21}/></div>
        <article className="heroResultCard">
          <div className="heroImageWrap"><PlaceIllustration kind={result.hero.category}/><span className="crownBadge">{result.preview?"候選預覽":"首選推薦"}</span></div>
          <div className="heroResultBody">
            <h1 onClick={()=>showDetail(result.hero)}>{result.hero.name}</h1><p>{result.hero.county}・{typeLabel(result.hero)}</p>
-           <div className="quickLine"><Car size={18}/>車程約 {result.hero._driveMinutes||"—"} 分鐘 <button onClick={()=>showDetail(result.hero)}><MapPin size={17}/>查看地圖</button></div>
+           <div className="quickLine"><Car size={18}/>{result.hero._driveMinutes!=null?("預估車程 "+result.hero._driveMinutes+" 分鐘"):"開啟定位可估算車程"} <button onClick={()=>showDetail(result.hero)}><MapPin size={17}/>查看資訊</button></div>
            <div className="miniStats"><div><span>適合年齡</span><b>{ageText(result.hero)}</b></div><div><span>費用</span><b>{priceLabel(result.hero)}</b></div><div><span>建議停留</span><b>{result.hero.durationMin?Math.round(result.hero.durationMin/60)+"–3小時":"約2小時"}</b></div></div>
            <div className="ratingRow"><div><span>放電程度</span><b>{"★".repeat(Math.min(5,result.hero.energyLevel||3))}</b></div><div><span>爸媽輕鬆度</span><b>{"★".repeat(Math.max(2,5-(result.hero.parentEffort||2)))}</b></div></div>
            <div className="amenityLine">{result.hero.amenities?.parking==="easy"&&<span><ParkingCircle/>好停車</span>}{result.hero.amenities?.stroller&&<span><Baby/>推車友善</span>}{result.hero.amenities?.foodNearby&&<span><Utensils/>附近有美食</span>}{result.hero.amenities?.parking!=="easy"&&!result.hero.amenities?.stroller&&!result.hero.amenities?.foodNearby&&<span>設施資訊待驗證</span>}</div>
            <div className="whyBox"><h3>{result.preview?"為什麼先讓你參考？":"為什麼推薦給你？"}</h3>{(result.preview?"符合你目前選的縣市、年齡與玩法條件；但仍待官方逐筆驗證。":reason(result.hero)).split("・").slice(0,4).map((r,i)=><p key={i}><span>✓</span>{r}</p>)}</div>{result.preview&&<div className="previewWarning">候選資料僅供 Demo 參考，不代表已確認營業、精確位置或設施。</div>}
-           <div className="mainActions"><button className="navPrimary" onClick={()=>map(result.hero)} disabled={result.preview||!result.hero.isCoordinatePrecise}><Navigation size={19}/>{result.preview?"座標待驗證":"導航去這裡"}</button><button className="shareSecondary" onClick={()=>share(result.hero)}><Share2 size={18}/>傳給另一半</button></div>
+           <div className="mainActions"><button className="navPrimary" onClick={()=>map(result.hero)} disabled={result.preview||!result.hero.isCoordinatePrecise}><Navigation size={19}/>{result.preview?"座標待驗證":"導航去這裡"}</button><button className="shareSecondary" disabled={result.preview} onClick={()=>share(result.hero)}><Share2 size={18}/>{result.preview?"驗證後可分享":"傳給另一半"}</button></div>
          </div>
        </article>
        <div className="altsHeader"><h2>另外兩個備選方案</h2><button onClick={reroll}><RotateCcw size={16}/>換一批推薦</button></div>
-       <div className="altStack">{(result.alternatives||[]).map(p=><article className="altResultCard" key={p.id}><button className="altThumb" onClick={()=>showDetail(p)}><PlaceIllustration kind={p.category} compact/></button><div className="altContent"><h3 onClick={()=>showDetail(p)}>{p.name}</h3><p>{p.county}・{typeLabel(p)}</p><div className="altMeta"><span><Car/>約 {p._driveMinutes||"—"} 分</span><span>{priceLabel(p)}</span></div><div className="altTags"><span>{p.indoor?"室內":"戶外"}</span>{p.isFree&&<span>免費</span>}</div></div><div className="altButtons"><button onClick={()=>map(p)}><Navigation size={16}/>導航</button><button onClick={()=>share(p)}><Share2 size={15}/>分享</button></div></article>)}{(result.alternatives||[]).length<2&&<div className="emptyAlt">沒有更多安全備選，系統不會跨縣市硬補。</div>}</div>
+       <div className="altStack">{(result.alternatives||[]).map(p=><article className="altResultCard" key={p.id}><button className="altThumb" onClick={()=>showDetail(p)}><PlaceIllustration kind={p.category} compact/></button><div className="altContent"><h3 onClick={()=>showDetail(p)}>{p.name}</h3><p>{p.county}・{typeLabel(p)}</p><div className="altMeta"><span><Car/>約 {p._driveMinutes||"—"} 分</span><span>{priceLabel(p)}</span></div><div className="altTags"><span>{p.indoor?"室內":"戶外"}</span>{p.isFree&&<span>免費</span>}</div></div><div className="altButtons"><button onClick={()=>map(p)}><Navigation size={16}/>導航</button><button disabled={result.preview} onClick={()=>share(p)}><Share2 size={15}/>{result.preview?"待驗證":"分享"}</button></div></article>)}{(result.alternatives||[]).length<2&&<div className="emptyAlt">沒有更多安全備選，系統不會跨縣市硬補。</div>}</div>
        <button className="modifyBtn" onClick={()=>setResult(null)}>修改條件</button>
      </>}
    </section>}
