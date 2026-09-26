@@ -1,0 +1,19 @@
+{
+  "name": "今天玩什麼",
+  "mode": "production-candidate",
+  "coverage": "Taiwan",
+  "coreJTBD": "Help parents decide where to take children today in under 30 seconds.",
+  "recommendationPipeline": [
+    "hard filters",
+    "age overlap",
+    "soft score",
+    "diversity",
+    "1 primary + 2 alternatives"
+  ],
+  "parkPolicy": "Parks are first-class recommendation entities and should represent 30-40% of the future inventory.",
+  "inventoryTargets": {
+    "candidate": 1000,
+    "verifiedPublished": 600
+  },
+  "truthPolicy": "Unverified hours, price, facilities and closures must not be presented as live facts."
+}
