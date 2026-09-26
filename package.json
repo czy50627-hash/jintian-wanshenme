@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "data:taipei-parks": "node scripts/build-taipei-parks.mjs",
+    "data:density": "node scripts/density-report.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
