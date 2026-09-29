@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-09-29T08:20:00.000Z",
-  "count": 8,
+  "updatedAt": "2026-09-29T08:30:00.000Z",
+  "count": 6,
   "records": [
     {
       "id": "taipei-zoo",
@@ -30,7 +30,7 @@
       "energyLevel": 3,
       "parentEffort": 2,
       "durationMin": null,
-      "parking": "normal",
+      "parking": "unknown",
       "stroller": null,
       "diaperStation": null,
       "nursingRoom": null,
@@ -75,7 +75,7 @@
       "energyLevel": 2,
       "parentEffort": 1,
       "durationMin": null,
-      "parking": "easy",
+      "parking": "unknown",
       "stroller": null,
       "diaperStation": null,
       "nursingRoom": null,
@@ -126,9 +126,17 @@
       "nursingRoom": null,
       "foodNearby": null,
       "officialUrl": "https://www.tcap.taipei/",
-      "sourceUrl": "https://www.tad.gov.tw/m1.aspx?id=A12-00382&sNo=0001016",
+      "sourceUrl": "https://www.tad.gov.tw/m1.aspx?id=A12-00382&sNo=0001090",
       "openingHours": {
-        "regular": {},
+        "regular": {
+          "mon": "09:00-17:00",
+          "tue": "09:00-17:00",
+          "wed": "09:00-17:00",
+          "thu": "09:00-17:00",
+          "fri": "09:00-17:00",
+          "sat": "09:00-20:00",
+          "sun": "09:00-18:00"
+        },
         "closedDays": []
       },
       "lastVerifiedAt": "2026-09-29",
@@ -137,52 +145,6 @@
       "verificationStatus": "verified",
       "publishStatus": "published",
       "sourceLabel": "交通部觀光署／臺北市立兒童新樂園"
-    },
-    {
-      "id": "taipei-botanical-garden",
-      "slug": "taipei-botanical-garden",
-      "name": "臺北植物園",
-      "county": "台北",
-      "district": "中正區",
-      "address": "臺北市中正區南海路53號",
-      "lat": 25.031004,
-      "lng": 121.50865,
-      "isCoordinatePrecise": true,
-      "category": "garden",
-      "indoor": false,
-      "outdoor": true,
-      "covered": false,
-      "ageTags": [
-        "0-2",
-        "3-5",
-        "6-8",
-        "9-12"
-      ],
-      "ageTagSource": "editorial",
-      "multiKidFriendly": true,
-      "isFree": true,
-      "priceMin": 0,
-      "priceMax": 0,
-      "energyLevel": 1,
-      "parentEffort": 1,
-      "durationMin": null,
-      "parking": "unknown",
-      "stroller": null,
-      "diaperStation": null,
-      "nursingRoom": null,
-      "foodNearby": null,
-      "officialUrl": "https://tpbg.tfri.gov.tw/",
-      "sourceUrl": "https://www.tad.gov.tw/m1.aspx?id=R137&sNo=0001016",
-      "openingHours": {
-        "regular": {},
-        "closedDays": []
-      },
-      "lastVerifiedAt": "2026-09-29",
-      "dataSource": "official_gov",
-      "temporaryClosed": false,
-      "verificationStatus": "verified",
-      "publishStatus": "published",
-      "sourceLabel": "交通部觀光署／農業部林業試驗所"
     },
     {
       "id": "taichung-nmns",
@@ -284,51 +246,6 @@
       "sourceLabel": "交通部觀光署／國立臺灣歷史博物館"
     },
     {
-      "id": "tainan-stsp-archaeology",
-      "slug": "tainan-stsp-archaeology",
-      "name": "國立臺灣史前文化博物館－南科考古館",
-      "county": "台南",
-      "district": "新市區",
-      "address": "臺南市新市區南科三路10號",
-      "lat": 23.100957,
-      "lng": 120.28355,
-      "isCoordinatePrecise": true,
-      "category": "museum",
-      "indoor": true,
-      "outdoor": false,
-      "covered": true,
-      "ageTags": [
-        "3-5",
-        "6-8",
-        "9-12"
-      ],
-      "ageTagSource": "editorial",
-      "multiKidFriendly": true,
-      "isFree": null,
-      "priceMin": null,
-      "priceMax": null,
-      "energyLevel": 1,
-      "parentEffort": 1,
-      "durationMin": null,
-      "parking": "unknown",
-      "stroller": null,
-      "diaperStation": null,
-      "nursingRoom": null,
-      "foodNearby": null,
-      "officialUrl": "https://stsp.nmp.gov.tw/",
-      "sourceUrl": "https://www.tad.gov.tw/m1.aspx?id=A12-00454&sNo=0001016",
-      "openingHours": {
-        "regular": {},
-        "closedDays": []
-      },
-      "lastVerifiedAt": "2026-09-29",
-      "dataSource": "official_gov",
-      "temporaryClosed": false,
-      "verificationStatus": "verified",
-      "publishStatus": "published",
-      "sourceLabel": "交通部觀光署／國立臺灣史前文化博物館"
-    },
-    {
       "id": "kaohsiung-nstm",
       "slug": "kaohsiung-nstm",
       "name": "國立科學工藝博物館",
@@ -355,7 +272,7 @@
       "energyLevel": 2,
       "parentEffort": 1,
       "durationMin": null,
-      "parking": "unknown",
+      "parking": "normal",
       "stroller": null,
       "diaperStation": null,
       "nursingRoom": null,
@@ -363,8 +280,17 @@
       "officialUrl": "https://www.nstm.gov.tw/",
       "sourceUrl": "https://www.tad.gov.tw/m1.aspx?id=103&sNo=0001016",
       "openingHours": {
-        "regular": {},
-        "closedDays": []
+        "regular": {
+          "tue": "09:00-17:00",
+          "wed": "09:00-17:00",
+          "thu": "09:00-17:00",
+          "fri": "09:00-17:00",
+          "sat": "09:00-17:00",
+          "sun": "09:00-17:00"
+        },
+        "closedDays": [
+          1
+        ]
       },
       "lastVerifiedAt": "2026-09-29",
       "dataSource": "official_gov",
