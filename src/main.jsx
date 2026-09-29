@@ -46,7 +46,7 @@ function PlaceIllustration({kind="park",compact=false}){
 
 function App(){
  const [places,setPlaces]=useState([]);
- const [candidatePlaces,setCandidatePlaces]=useState([]);
+
  const [ages,setAges]=useState(["3-5"]);
  const [county,setCounty]=useState("台北");
  const [prefs,setPrefs]=useState(["auto"]);
@@ -62,7 +62,9 @@ function App(){
  const [transport,setTransport]=useState("drive");
 
  useEffect(()=>{
-   fetch("/data/places.production.json").then(r=>r.json()).then(prod=>{\n     const pp=(prod.records||[]).map(normalizePlace);\n     setPlaces(pp);
+   fetch("/data/places.production.json").then(r=>r.json()).then(prod=>{
+     const pp=(prod.records||[]).map(normalizePlace);
+     setPlaces(pp);
      const m=location.pathname.match(/^\/r\/([^/]+)/);
      if(m){
        const id=decodeURIComponent(m[1]); const q=new URLSearchParams(location.search); const found=pp.find(p=>p.id===id);
@@ -103,10 +105,10 @@ function App(){
      <div className="detailHero"><PlaceIllustration kind={detailPlace.category}/><button className="roundIcon backBtn" onClick={()=>{if(sharedPlace){history.pushState({},"","/");setSharedPlace(null)}else setSelectedPlace(null)}}><ArrowLeft size={22}/></button><div className="detailTools"><button className="roundIcon"><Heart size={19}/></button><button className="roundIcon" onClick={()=>share(detailPlace)}><Share2 size={19}/></button></div></div>
      <section className="detailSheet">
        <h1>{detailPlace.name}</h1><p className="subLine">{detailPlace.county}・{typeLabel(detailPlace)}</p>
-       <div className="tagRow">{detailPlace.isFree&&<span className="softTag amber">免費</span>}{detailPlace.multiKidFriendly&&<span className="softTag green">親子友善</span>}<span className="softTag blue">{detailPlace.indoor?"室內":"戶外"}</span><span className="softTag coral">{priceLabel(detailPlace)}</span></div>
+       <div className="tagRow">{detailPlace.isFree&&<span className="softTag amber">免費</span>}<span className="softTag blue">{detailPlace.indoor?"室內":"戶外"}</span><span className="softTag coral">{priceLabel(detailPlace)}</span></div>
        <p className="description">{detailPlace.address}</p>
        <div className="metricGrid"><div><Car/><b>車程</b><span>{detailPlace._driveMinutes?detailPlace._driveMinutes+" 分鐘":"依導航為準"}</span></div><div><Clock3/><b>建議停留</b><span>{detailPlace.durationMin?Math.round(detailPlace.durationMin/60)+" 小時":"未提供"}</span></div><div><WalletCards/><b>費用</b><span>{priceLabel(detailPlace)}</span></div></div>
-       <section className="detailBlock"><h2>適合年齡</h2><div className="ageDetailGrid">{AGES.map(a=><div key={a.id} className={(detailPlace.ageTags||[]).includes(a.id)?"ageMini on":"ageMini"}><Baby size={21}/><b>{a.label}</b></div>)}</div></section>
+       <section className="detailBlock"><h2>適齡判讀 <small>（編輯分類）</small></h2><div className="ageDetailGrid">{AGES.map(a=><div key={a.id} className={(detailPlace.ageTags||[]).includes(a.id)?"ageMini on":"ageMini"}><Baby size={21}/><b>{a.label}</b></div>)}</div></section>
        <section className="detailBlock"><h2>設施與服務</h2><div className="facilityGrid"><div><ParkingCircle/><span>{detailPlace.amenities?.parking==="easy"?"好停車":"停車依現場"}</span></div><div><Baby/><span>{detailPlace.amenities?.stroller?"推車友善":"推車資訊待確認"}</span></div><div><Accessibility/><span>{detailPlace.amenities?.diaperStation?"有尿布台":"尿布台待確認"}</span></div><div><Utensils/><span>{detailPlace.amenities?.foodNearby?"附近有餐飲":"餐飲待確認"}</span></div></div></section>
        <section className="detailBlock"><h2>為什麼推薦給你？</h2><div className="reasonCard">{reason(detailPlace).split("・").map((r,i)=><div key={i}><span className="checkDot">✓</span>{r}</div>)}</div></section>
        <div className="trustStrip"><ShieldCheck size={18}/><span>{detailPlace.sourceLabel||"官方資料"}</span>{detailPlace.trustLayer?.lastVerifiedAt&&<span>驗證 {detailPlace.trustLayer.lastVerifiedAt}</span>}{detailPlace.trustLayer?.officialUrl&&<a href={detailPlace.trustLayer.officialUrl} target="_blank" rel="noreferrer">官方來源 <ExternalLink size={13}/></a>}</div>
@@ -149,7 +151,6 @@ function App(){
            <h1 onClick={()=>showDetail(result.hero)}>{result.hero.name}</h1><p>{result.hero.county}・{typeLabel(result.hero)}</p>
            <div className="quickLine"><Car size={18}/>{result.hero._driveMinutes!=null?("預估車程 "+result.hero._driveMinutes+" 分鐘"):"開啟定位可估算車程"} <button onClick={()=>showDetail(result.hero)}><MapPin size={17}/>查看資訊</button></div>
            <div className="miniStats"><div><span>適合年齡</span><b>{ageText(result.hero)}</b></div><div><span>費用</span><b>{priceLabel(result.hero)}</b></div><div><span>建議停留</span><b>{result.hero.durationMin?Math.round(result.hero.durationMin/60)+"小時":"未提供"}</b></div></div>
-           <div className="ratingRow">{result.hero.energyLevel!=null&&<div><span>活動強度</span><b>{"★".repeat(Math.min(5,result.hero.energyLevel))}</b></div>}{result.hero.parentEffort!=null&&<div><span>家長負擔</span><b>{"★".repeat(Math.min(5,result.hero.parentEffort))}</b></div>}</div>
            <div className="amenityLine">{result.hero.amenities?.parking==="easy"&&<span><ParkingCircle/>好停車</span>}{result.hero.amenities?.stroller&&<span><Baby/>推車友善</span>}{result.hero.amenities?.foodNearby&&<span><Utensils/>附近有美食</span>}{result.hero.amenities?.parking!=="easy"&&!result.hero.amenities?.stroller&&!result.hero.amenities?.foodNearby&&<span>設施資訊待驗證</span>}</div>
            <div className="whyBox"><h3>為什麼推薦給你？</h3>{reason(result.hero).split("・").slice(0,4).map((r,i)=><p key={i}><span>✓</span>{r}</p>)}</div>
            <div className="mainActions"><button className="navPrimary" onClick={()=>map(result.hero)} disabled={!result.hero.isCoordinatePrecise}><Navigation size={19}/>導航去這裡</button><button className="shareSecondary" onClick={()=>share(result.hero)}><Share2 size={18}/>傳給另一半</button></div>
