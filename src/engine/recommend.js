@@ -47,8 +47,10 @@ export function evaluateRecommendations(pool,prefs){
     if(!matchesPlayStyles(place,prefs.playStyles)) return false;
     if(prefs.currentRainProb>=60 && ["now","afternoon"].includes(prefs.when) && place.outdoor && !place.covered && !place.indoor) return false;
     if(!place.ageTags?.some(tag=>prefs.ages.includes(tag))) return false;
-    const drive=estimateDriveMinutes(prefs.userCoords,place);
-    if(drive!==null && drive>prefs.maxDriveMinutes) return false;
+    if(prefs.transport==="drive"){
+      const drive=estimateDriveMinutes(prefs.userCoords,place);
+      if(drive!==null && drive>prefs.maxDriveMinutes) return false;
+    }
     return true;
   });
 
@@ -63,8 +65,24 @@ export function evaluateRecommendations(pool,prefs){
     score+=ageRatio*24;
     if(prefs.ages.length>1 && place.multiKidFriendly) score+=6;
 
-    const drive=estimateDriveMinutes(prefs.userCoords,place);
-    if(drive===null) score+=5;
+    const drive=prefs.transport==="drive"?estimateDriveMinutes(prefs.userCoords,place):null;
+    let nearestTransit=null;
+    if(prefs.transport==="transit"){
+      const options=(place.transit?.nearest||[]).slice().sort((a,b)=>{
+        const av=Number.isFinite(a.distanceM)?a.distanceM:999999;
+        const bv=Number.isFinite(b.distanceM)?b.distanceM:999999;
+        return av-bv;
+      });
+      nearestTransit=options[0]||null;
+      if(nearestTransit){
+        if(Number.isFinite(nearestTransit.distanceM)){
+          if(nearestTransit.distanceM<=200) score+=18;
+          else if(nearestTransit.distanceM<=500) score+=14;
+          else if(nearestTransit.distanceM<=1000) score+=8;
+          else score+=3;
+        } else score+=6;
+      }
+    } else if(drive===null) score+=5;
     else score+=Math.max(0,(prefs.maxDriveMinutes-drive)/prefs.maxDriveMinutes)*18;
 
     if(prefs.currentRainProb<30 && place.outdoor) score+=16;
@@ -85,7 +103,7 @@ export function evaluateRecommendations(pool,prefs){
     if(pg.toilet===true) score+=3;
     if(pg.shadeLevel==="high") score+=3;
     if(place.socialPopularity) score+=Math.min(8,place.socialPopularity/15);
-    return {...place,_score:score,_driveMinutes:drive};
+    return {...place,_score:score,_driveMinutes:drive,_nearestTransit:nearestTransit};
   }).sort((a,b)=>b._score-a._score);
 
   const hero=scored[0];
