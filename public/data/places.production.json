@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-09-29T08:30:00.000Z",
-  "count": 6,
+  "updatedAt": "2026-09-30T02:20:00.000Z",
+  "count": 11,
   "records": [
     {
       "id": "taipei-zoo",
@@ -46,7 +46,23 @@
       "temporaryClosed": false,
       "verificationStatus": "verified",
       "publishStatus": "published",
-      "sourceLabel": "交通部觀光署／臺北市立動物園"
+      "sourceLabel": "交通部觀光署／臺北市立動物園",
+      "transit": {
+        "source": "交通部觀光署",
+        "nearest": [
+          {
+            "mode": "bus",
+            "name": "捷運動物園站",
+            "distanceM": 98
+          },
+          {
+            "mode": "metro",
+            "name": "動物園站",
+            "distanceM": 156
+          }
+        ]
+      },
+      "transitSourceUrl": "https://www.tad.gov.tw/m1.aspx?id=230&sNo=0001016"
     },
     {
       "id": "taipei-science",
@@ -91,7 +107,23 @@
       "temporaryClosed": false,
       "verificationStatus": "verified",
       "publishStatus": "published",
-      "sourceLabel": "交通部觀光署／國立臺灣科學教育館"
+      "sourceLabel": "交通部觀光署／國立臺灣科學教育館",
+      "transit": {
+        "source": "交通部觀光署",
+        "nearest": [
+          {
+            "mode": "bus",
+            "name": "國立科教館",
+            "distanceM": 136
+          },
+          {
+            "mode": "metro",
+            "name": "芝山站",
+            "distanceM": 933
+          }
+        ]
+      },
+      "transitSourceUrl": "https://www.tad.gov.tw/m1.aspx?id=11209&sNo=0001016"
     },
     {
       "id": "taipei-childrens-amusement",
@@ -144,7 +176,23 @@
       "temporaryClosed": false,
       "verificationStatus": "verified",
       "publishStatus": "published",
-      "sourceLabel": "交通部觀光署／臺北市立兒童新樂園"
+      "sourceLabel": "交通部觀光署／臺北市立兒童新樂園",
+      "transit": {
+        "source": "交通部觀光署",
+        "nearest": [
+          {
+            "mode": "bus",
+            "name": "兒童新樂園",
+            "distanceM": 101
+          },
+          {
+            "mode": "metro",
+            "name": "芝山站",
+            "distanceM": 980
+          }
+        ]
+      },
+      "transitSourceUrl": "https://www.tad.gov.tw/m1.aspx?id=A12-00382&sNo=0001090"
     },
     {
       "id": "taichung-nmns",
@@ -189,7 +237,23 @@
       "temporaryClosed": false,
       "verificationStatus": "verified",
       "publishStatus": "published",
-      "sourceLabel": "交通部觀光署／國立自然科學博物館"
+      "sourceLabel": "交通部觀光署／國立自然科學博物館",
+      "transit": {
+        "source": "交通部觀光署",
+        "nearest": [
+          {
+            "mode": "bus",
+            "name": "植物園(西屯路)",
+            "distanceM": 163
+          },
+          {
+            "mode": "metro",
+            "name": "文華高中站",
+            "distanceM": 1680
+          }
+        ]
+      },
+      "transitSourceUrl": "https://www.tad.gov.tw/m1.aspx?id=2191&sNo=0001016"
     },
     {
       "id": "tainan-nmth",
@@ -243,7 +307,23 @@
       "temporaryClosed": false,
       "verificationStatus": "verified",
       "publishStatus": "published",
-      "sourceLabel": "交通部觀光署／國立臺灣歷史博物館"
+      "sourceLabel": "交通部觀光署／國立臺灣歷史博物館",
+      "transit": {
+        "source": "交通部觀光署",
+        "nearest": [
+          {
+            "mode": "bus",
+            "name": "和順轉運站",
+            "distanceM": 276
+          },
+          {
+            "mode": "rail",
+            "name": "永康站",
+            "distanceM": 2930
+          }
+        ]
+      },
+      "transitSourceUrl": "https://www.tad.gov.tw/m1.aspx?id=A12-00403&sNo=0001016"
     },
     {
       "id": "kaohsiung-nstm",
@@ -297,7 +377,355 @@
       "temporaryClosed": false,
       "verificationStatus": "verified",
       "publishStatus": "published",
-      "sourceLabel": "交通部觀光署／國立科學工藝博物館"
+      "sourceLabel": "交通部觀光署／國立科學工藝博物館",
+      "transit": {
+        "source": "交通部觀光署",
+        "nearest": [
+          {
+            "mode": "bus",
+            "name": "平等路口(九如一路)",
+            "distanceM": 178
+          },
+          {
+            "mode": "rail",
+            "name": "科工館站",
+            "distanceM": 588
+          },
+          {
+            "mode": "metro",
+            "name": "樹德家商站",
+            "distanceM": 614
+          }
+        ]
+      },
+      "transitSourceUrl": "https://www.tad.gov.tw/m1.aspx?id=103&sNo=0001016"
+    },
+    {
+      "id": "newtaipei-siwei-park",
+      "slug": "newtaipei-siwei-park",
+      "name": "四維公園",
+      "county": "新北",
+      "district": "板橋區",
+      "address": "新北市板橋區陽明街166號",
+      "lat": 25.0246845,
+      "lng": 121.4636351,
+      "isCoordinatePrecise": true,
+      "coordinateSource": "新北市公有停車場同址座標",
+      "category": "park",
+      "indoor": false,
+      "outdoor": true,
+      "covered": false,
+      "ageTags": [
+        "0-2",
+        "3-5",
+        "6-8",
+        "9-12"
+      ],
+      "ageTagSource": "editorial_from_equipment",
+      "multiKidFriendly": true,
+      "isFree": true,
+      "priceMin": 0,
+      "priceMax": 0,
+      "energyLevel": null,
+      "parentEffort": null,
+      "durationMin": null,
+      "parking": "normal",
+      "stroller": null,
+      "diaperStation": null,
+      "nursingRoom": null,
+      "foodNearby": null,
+      "playground": {
+        "playgroundType": "共融遊戲場",
+        "officialEquipmentText": "共融性式遊具、滑梯、攀爬網、沙坑",
+        "toilet": true,
+        "shadeLevel": "high"
+      },
+      "officialUrl": "https://www.landscaping.ntpc.gov.tw/cht/index.php?act=park&code=view&id=211",
+      "sourceUrl": "https://www.landscaping.ntpc.gov.tw/cht/index.php?act=park&code=view&id=211",
+      "openingHours": {
+        "regular": {},
+        "closedDays": []
+      },
+      "lastVerifiedAt": "2026-09-30",
+      "dataSource": "official_gov",
+      "temporaryClosed": false,
+      "verificationStatus": "verified",
+      "publishStatus": "published",
+      "sourceLabel": "新北市政府綠美化環境景觀處",
+      "transit": {
+        "source": "新北市立圖書館板橋四維分館",
+        "nearest": [
+          {
+            "mode": "bus",
+            "name": "新埔國小站",
+            "distanceM": null
+          },
+          {
+            "mode": "metro",
+            "name": "新埔站",
+            "distanceM": null,
+            "note": "1號出口步行約10分鐘"
+          }
+        ]
+      },
+      "transitSourceUrl": "https://www.library.ntpc.gov.tw/branch/libraryBranch/detail/8aa9646575074db0a99c641a5f029ddb?branchId=74b66aa193f04492b1b9732e5a1b733b"
+    },
+    {
+      "id": "newtaipei-xitou-park",
+      "slug": "newtaipei-xitou-park",
+      "name": "溪頭公園",
+      "county": "新北",
+      "district": "板橋區",
+      "address": "新北市板橋區溪頭街與華江一路間",
+      "lat": 25.03312,
+      "lng": 121.46852,
+      "isCoordinatePrecise": true,
+      "coordinateSource": "OpenStreetMap/YouBike 公園節點",
+      "category": "park",
+      "indoor": false,
+      "outdoor": true,
+      "covered": false,
+      "ageTags": [
+        "0-2",
+        "3-5",
+        "6-8"
+      ],
+      "ageTagSource": "editorial_from_equipment",
+      "multiKidFriendly": true,
+      "isFree": true,
+      "priceMin": 0,
+      "priceMax": 0,
+      "energyLevel": null,
+      "parentEffort": null,
+      "durationMin": null,
+      "parking": "normal",
+      "stroller": null,
+      "diaperStation": null,
+      "nursingRoom": null,
+      "foodNearby": null,
+      "playground": {
+        "playgroundType": "兒童遊戲場",
+        "officialEquipmentText": "滑梯、搖搖樂、鞦韆",
+        "toilet": true,
+        "shadeLevel": "unknown"
+      },
+      "officialUrl": "https://www.landscaping.ntpc.gov.tw/cht/index.php?act=park&code=view&id=250",
+      "sourceUrl": "https://www.landscaping.ntpc.gov.tw/cht/index.php?act=park&code=view&id=250",
+      "openingHours": {
+        "regular": {},
+        "closedDays": []
+      },
+      "lastVerifiedAt": "2026-09-30",
+      "dataSource": "official_gov_plus_map",
+      "temporaryClosed": false,
+      "verificationStatus": "verified",
+      "publishStatus": "published",
+      "sourceLabel": "新北市政府綠美化環境景觀處",
+      "transit": {
+        "source": "公園周邊公共運輸地圖",
+        "nearest": [
+          {
+            "mode": "bike",
+            "name": "YouBike2.0 溪頭公園",
+            "distanceM": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "newtaipei-wanping-park",
+      "slug": "newtaipei-wanping-park",
+      "name": "萬坪公園",
+      "county": "新北",
+      "district": "板橋區",
+      "address": "新北市板橋區文化路與民權路交叉口",
+      "lat": 25.01334,
+      "lng": 121.46056,
+      "isCoordinatePrecise": true,
+      "coordinateSource": "OpenStreetMap 公園鄰接站點",
+      "category": "park",
+      "indoor": false,
+      "outdoor": true,
+      "covered": false,
+      "ageTags": [
+        "0-2",
+        "3-5",
+        "6-8",
+        "9-12"
+      ],
+      "ageTagSource": "editorial_general_park",
+      "multiKidFriendly": true,
+      "isFree": true,
+      "priceMin": 0,
+      "priceMax": 0,
+      "energyLevel": null,
+      "parentEffort": null,
+      "durationMin": null,
+      "parking": "unknown",
+      "stroller": null,
+      "diaperStation": null,
+      "nursingRoom": null,
+      "foodNearby": null,
+      "playground": {
+        "playgroundType": "景觀休憩公園",
+        "officialEquipmentText": null,
+        "toilet": true,
+        "shadeLevel": "unknown"
+      },
+      "officialUrl": "https://www.landscaping.ntpc.gov.tw/cht/index.php?act=park&code=view&id=249",
+      "sourceUrl": "https://www.landscaping.ntpc.gov.tw/cht/index.php?act=park&code=view&id=249",
+      "openingHours": {
+        "regular": {},
+        "closedDays": []
+      },
+      "lastVerifiedAt": "2026-09-30",
+      "dataSource": "official_gov_plus_map",
+      "temporaryClosed": false,
+      "verificationStatus": "verified",
+      "publishStatus": "published",
+      "sourceLabel": "新北市政府綠美化環境景觀處",
+      "transit": {
+        "source": "新北市板橋區公所",
+        "nearest": [
+          {
+            "mode": "metro",
+            "name": "板橋站",
+            "distanceM": null,
+            "note": "捷運板橋站即達"
+          },
+          {
+            "mode": "bus",
+            "name": "板橋車站",
+            "distanceM": null,
+            "note": "多線公車可達"
+          }
+        ]
+      },
+      "transitSourceUrl": "https://www.banqiao.ntpc.gov.tw/userfiles/3010500/files/%E8%90%AC%E5%9D%AA%E5%85%AC%E5%9C%92%281%29.pdf"
+    },
+    {
+      "id": "taipei-daan-forest",
+      "slug": "taipei-daan-forest",
+      "name": "大安森林公園",
+      "county": "台北",
+      "district": "大安區",
+      "address": "臺北市大安區新生南路二段1號",
+      "lat": 25.032435,
+      "lng": 121.5349,
+      "isCoordinatePrecise": true,
+      "category": "park",
+      "indoor": false,
+      "outdoor": true,
+      "covered": false,
+      "ageTags": [
+        "0-2",
+        "3-5",
+        "6-8",
+        "9-12"
+      ],
+      "ageTagSource": "editorial_general_park",
+      "multiKidFriendly": true,
+      "isFree": true,
+      "priceMin": 0,
+      "priceMax": 0,
+      "energyLevel": null,
+      "parentEffort": null,
+      "durationMin": null,
+      "parking": "normal",
+      "stroller": null,
+      "diaperStation": null,
+      "nursingRoom": null,
+      "foodNearby": null,
+      "officialUrl": "https://www.travel.taipei/zh-tw/attraction/details/82",
+      "sourceUrl": "https://www.tad.gov.tw/m1.aspx?id=R20&sNo=0001016",
+      "openingHours": {
+        "regular": {},
+        "closedDays": []
+      },
+      "lastVerifiedAt": "2026-09-30",
+      "dataSource": "official_gov",
+      "temporaryClosed": false,
+      "verificationStatus": "verified",
+      "publishStatus": "published",
+      "sourceLabel": "交通部觀光署",
+      "transit": {
+        "source": "交通部觀光署",
+        "nearest": [
+          {
+            "mode": "metro",
+            "name": "大安森林公園站",
+            "distanceM": 153
+          },
+          {
+            "mode": "bus",
+            "name": "捷運大安森林公園站",
+            "distanceM": 173
+          }
+        ]
+      },
+      "transitSourceUrl": "https://www.tad.gov.tw/m1.aspx?id=R20&sNo=0001016"
+    },
+    {
+      "id": "taipei-expo-park",
+      "slug": "taipei-expo-park",
+      "name": "花博公園",
+      "county": "台北",
+      "district": "中山區",
+      "address": "臺北市中山區玉門街1號",
+      "lat": 25.070753,
+      "lng": 121.52048,
+      "isCoordinatePrecise": true,
+      "category": "park",
+      "indoor": false,
+      "outdoor": true,
+      "covered": false,
+      "ageTags": [
+        "0-2",
+        "3-5",
+        "6-8",
+        "9-12"
+      ],
+      "ageTagSource": "editorial_general_park",
+      "multiKidFriendly": true,
+      "isFree": true,
+      "priceMin": 0,
+      "priceMax": 0,
+      "energyLevel": null,
+      "parentEffort": null,
+      "durationMin": null,
+      "parking": "normal",
+      "stroller": null,
+      "diaperStation": null,
+      "nursingRoom": null,
+      "foodNearby": true,
+      "officialUrl": "https://www.expopark.taipei/",
+      "sourceUrl": "https://www.tad.gov.tw/m1.aspx?id=A12-00140&sNo=0001016",
+      "openingHours": {
+        "regular": {},
+        "closedDays": []
+      },
+      "lastVerifiedAt": "2026-09-30",
+      "dataSource": "official_gov",
+      "temporaryClosed": false,
+      "verificationStatus": "verified",
+      "publishStatus": "published",
+      "sourceLabel": "交通部觀光署",
+      "transit": {
+        "source": "交通部觀光署",
+        "nearest": [
+          {
+            "mode": "metro",
+            "name": "圓山站",
+            "distanceM": 84
+          },
+          {
+            "mode": "bus",
+            "name": "捷運圓山站(圓山轉運站)",
+            "distanceM": 101
+          }
+        ]
+      },
+      "transitSourceUrl": "https://www.tad.gov.tw/m1.aspx?id=A12-00140&sNo=0001016"
     }
   ]
 }
