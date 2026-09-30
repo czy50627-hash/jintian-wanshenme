@@ -198,3 +198,13 @@ body{background:linear-gradient(90deg,#eaf8fb,#fffaf0 25%,#fffaf0 75%,#eaf8fb)}
 .photoHero .heroUnderline{width:72%;margin:-4px auto 12px}
 .photoHero .heroCopy p{background:rgba(255,255,255,.72);backdrop-filter:blur(5px);border-radius:999px;padding:7px 11px;max-width:305px}
 @media(max-width:360px){.photoHero{height:440px;min-height:440px}.photoHero .heroCopy h1{font-size:31px}.photoHero .heroCopy h1 strong{font-size:40px}}
+
+/* v7 hero visibility fix */
+.photoHero{min-height:520px;height:520px;background:#e9f8ff}
+.heroFamilyImg{object-position:center 67%}
+.heroShade{background:
+  linear-gradient(180deg,rgba(245,252,255,.97) 0%,rgba(245,252,255,.78) 20%,rgba(245,252,255,.20) 40%,rgba(255,255,255,0) 58%),
+  linear-gradient(90deg,rgba(255,255,255,.05),rgba(255,255,255,0) 60%)}
+.photoHero .heroCopy{padding-top:24px}
+.photoHero .heroCopy p{background:rgba(255,255,255,.76)}
+@media(max-width:360px){.photoHero{height:485px;min-height:485px}}
