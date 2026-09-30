@@ -20,6 +20,30 @@ const AGES=[
   {id:"9-12",label:"9–12歲",sub:"國小高年級"}
 ];
 const COUNTIES=["台北","新北","桃園","新竹","苗栗","台中","彰化","南投","雲林","嘉義","台南","高雄","屏東","宜蘭","花蓮","台東","基隆","澎湖","金門","連江"];
+function localDay(date=new Date()){return new Date(date.getFullYear(),date.getMonth(),date.getDate())}
+function getWeekRange(date=new Date()){
+  const d=localDay(date); const day=d.getDay(); const diff=day===0?-6:1-day;
+  const start=new Date(d); start.setDate(d.getDate()+diff);
+  const end=new Date(start); end.setDate(start.getDate()+6); end.setHours(23,59,59,999);
+  return {start,end};
+}
+function dateAtStart(s){if(!s)return null;const d=new Date(s+"T00:00:00+08:00");return Number.isNaN(d.getTime())?null:d}
+function dateAtEnd(s){if(!s)return null;const d=new Date(s+"T23:59:59+08:00");return Number.isNaN(d.getTime())?null:d}
+function overlapsRange(e,start,end){
+  const s=dateAtStart(e.startDate)||new Date(0);
+  const x=dateAtEnd(e.endDate||e.startDate)||s;
+  return s<=end && x>=start;
+}
+function isCurrentWeekEvent(e){
+  const {start,end}=getWeekRange(); return overlapsRange(e,start,end);
+}
+function isUpcomingLimited(e){
+  const today=localDay(); const end=dateAtEnd(e.endDate||e.startDate); if(!end||end<today)return false;
+  const max=new Date(today); max.setDate(today.getDate()+90);
+  const start=dateAtStart(e.startDate)||today;
+  return start<=max;
+}
+
 const CENTERS={"台北":[25.0478,121.5319],"新北":[25.012,121.4657],"桃園":[24.9937,121.301],"新竹":[24.8138,120.9675],"苗栗":[24.5602,120.8214],"台中":[24.1477,120.6736],"彰化":[24.0756,120.544],"南投":[23.9609,120.9719],"雲林":[23.7092,120.4313],"嘉義":[23.4801,120.4491],"台南":[22.9999,120.227],"高雄":[22.6273,120.3014],"屏東":[22.6761,120.4942],"宜蘭":[24.7021,121.7378],"花蓮":[23.9911,121.6112],"台東":[22.7554,121.15],"基隆":[25.1276,121.7392],"澎湖":[23.5655,119.5863],"金門":[24.4368,118.3171],"連江":[26.1605,119.9517]};
 
 function PlaceVisual({place,compact=false}){
@@ -116,18 +140,15 @@ function App(){
  const currentPrefs=useMemo(()=>({selectedCounty:county,userCoords,ages,when,maxDriveMinutes:maxDrive,playStyles:prefs,excludedPlaceIds:excluded,currentRainProb:weather?.pop??0,transport}),[county,userCoords,ages,when,maxDrive,prefs,excluded,weather,transport]);
  const production=useMemo(()=>evaluateRecommendations(places,currentPrefs),[places,currentPrefs]);
  const matchingEvents=useMemo(()=>{
-   const today=new Date("2026-09-30T00:00:00+08:00");
    const wantsWeekend=prefs.includes("weekend_event");
    const wantsLimited=prefs.includes("limited_event");
    return events.filter(e=>{
      if(e.county!==county) return false;
-     const end=new Date(e.endDate+"T23:59:59+08:00");
-     if(end<today) return false;
-     if(wantsWeekend && e.type!=="weekend") return false;
-     if(wantsLimited && e.type!=="limited") return false;
-     if(!wantsWeekend&&!wantsLimited) return true;
-     return true;
-   }).slice(0,6);
+     if(wantsWeekend && !wantsLimited) return isCurrentWeekEvent(e);
+     if(wantsLimited && !wantsWeekend) return isUpcomingLimited(e);
+     if(wantsWeekend && wantsLimited) return isCurrentWeekEvent(e) || isUpcomingLimited(e);
+     return isCurrentWeekEvent(e) || isUpcomingLimited(e);
+   }).sort((a,b)=>(a.startDate||"").localeCompare(b.startDate||"")).slice(0,12);
  },[events,county,prefs]);
  const nearbyParks=useMemo(()=>{
    if(!userCoords) return [];
@@ -181,7 +202,7 @@ function App(){
        <h2>想怎麼玩？ <span>（可複選）</span></h2>
        <div className="playGrid">
          {[["outdoor","戶外放電",TreePine],["indoor","室內玩樂",House],["free","免費景點",WalletCards],["auto","自動最適",Umbrella]].map(([id,label,Icon])=><button key={id} className={prefs.includes(id)?"playCard selected":"playCard"} onClick={()=>togglePref(id)}><Icon size={24}/><b>{label}</b></button>)}
-         <button className={prefs.includes("weekend_event")?"playCard selected eventPick":"playCard eventPick"} onClick={()=>togglePref("weekend_event")}><CalendarDays size={24}/><b>本週活動</b><small>{events.filter(e=>e.county===county&&e.type==="weekend").length} 筆</small></button><button className={prefs.includes("limited_event")?"playCard selected eventPick":"playCard eventPick"} onClick={()=>togglePref("limited_event")}><Star size={24}/><b>期間限定</b><small>{events.filter(e=>e.county===county&&e.type==="limited").length} 筆</small></button>
+         <button className={prefs.includes("weekend_event")?"playCard selected eventPick":"playCard eventPick"} onClick={()=>togglePref("weekend_event")}><CalendarDays size={24}/><b>本週活動</b><small>{events.filter(e=>e.county===county&&isCurrentWeekEvent(e)).length} 筆</small></button><button className={prefs.includes("limited_event")?"playCard selected eventPick":"playCard eventPick"} onClick={()=>togglePref("limited_event")}><Star size={24}/><b>期間限定</b><small>{events.filter(e=>e.county===county&&isUpcomingLimited(e)).length} 筆</small></button>
        </div>
        <h2>何時出發？</h2>
        <div className="whenGrid">{[["now","現在",SunMedium],["afternoon","今天下午",Clock3],["tomorrow","明天",CalendarDays],["weekend","這週末",CalendarDays]].map(([id,label,Icon])=><button key={id} className={when===id?"miniChoice selected":"miniChoice"} onClick={()=>setWhen(id)}><Icon size={21}/><span>{label}</span></button>)}</div>
@@ -209,7 +230,7 @@ function App(){
        </article>}
        <div className="altsHeader"><h2>另外兩個備選方案</h2><button onClick={reroll}><RotateCcw size={16}/>換一批推薦</button></div>
        <div className="altStack">{(result.alternatives||[]).map(p=><article className="altResultCard" key={p.id}><button className="altThumb" onClick={()=>showDetail(p)}><PlaceVisual place={p} compact/></button><div className="altContent"><h3 onClick={()=>showDetail(p)}>{p.name}</h3><p>{p.county}・{typeLabel(p)}</p><div className="altMeta"><span>{transport==="transit"?<Bus/>:<Car/>}{transport==="transit"?(p._nearestTransit?.name||"站點待補"):(p._driveMinutes!=null?("約 "+p._driveMinutes+" 分"):"定位後估算")}</span><span>{priceLabel(p)}</span></div><div className="altTags"><span>{p.indoor?"室內":"戶外"}</span>{p.isFree&&<span>免費</span>}</div></div><div className="altButtons"><button onClick={()=>map(p)}><Navigation size={16}/>導航</button><button onClick={()=>share(p)}><Share2 size={15}/>分享</button></div></article>)}{(result.alternatives||[]).length<2&&<div className="emptyAlt">沒有更多安全備選，系統不會跨縣市硬補。</div>}</div>
-       {(result.events||[]).length>0&&<section className="eventSection"><div className="sectionTitleRow"><div><span className="sectionKicker">這週可以去</span><h2>本週活動・期間限定</h2></div><CalendarDays size={22}/></div><div className="eventList">{result.events.map(e=><a key={e.id} className="eventCard" href={e.sourceUrl} target="_blank" rel="noreferrer"><div className={"eventRibbon "+e.type}>{e.type==="weekend"?"本週活動":"期間限定"}</div><div className="eventCardBody"><b>{e.title}</b><p>{e.venue}</p><div className="eventMeta"><span>{e.startDate===e.endDate?e.startDate:e.startDate+" ～ "+e.endDate}</span><span>{e.isFree===true?"免費":"費用依官方公告"}</span></div><small>{e.description}</small></div><ExternalLink size={16}/></a>)}</div></section>}
+       {(result.events||[]).length>0&&<section className="eventSection"><div className="sectionTitleRow"><div><span className="sectionKicker">這週可以去</span><h2>本週活動・期間限定</h2></div><CalendarDays size={22}/></div><div className="eventList">{result.events.map(e=><a key={e.id} className="eventCard" href={e.sourceUrl} target="_blank" rel="noreferrer"><div className={"eventRibbon "+e.type}>{isCurrentWeekEvent(e)?"本週活動":"期間限定"}</div><div className="eventCardBody"><b>{e.title}</b><p>{e.venue}</p><div className="eventMeta"><span>{e.startDate===e.endDate?e.startDate:e.startDate+" ～ "+e.endDate}</span><span>{e.isFree===true?"免費":"費用依官方公告"}</span></div><small>{e.description}</small></div><ExternalLink size={16}/></a>)}</div></section>}
        <section className="parkDirectory"><div className="nearbyHead"><div><h2>{county}公園／共融遊戲場</h2><p>{parksLoading||officialFeedLoading?"資料載入中…":`公園地圖 ${countyParks.length} 筆・官方親子景點 ${places.filter(p=>p.county===county).length} 筆`}</p></div><TreePine size={20}/></div>{parksLoading?<div className="parkLoading">正在讀取公園資料…</div>:<div className="parkDirectoryGrid">{countyParks.slice(0,12).map(p=><button key={p.id} className="parkChip" onClick={()=>{setCounty(p.county||county);setNotice(`${p.name} 為地圖資料，設施請以現場為準`)}}><b>{p.name}</b><span>{p.inclusive?"共融遊戲場":p.category==="playground"?"兒童遊戲場":"公園"}</span></button>)}</div>}</section>{userCoords&&nearbyParks.length>0&&<section className="nearbyParks"><div className="nearbyHead"><div><h2>附近公園</h2><p>依你目前定位，以直線距離排序</p></div><MapPin size={20}/></div><div className="nearbyParkList">{nearbyParks.map(p=><button key={p.id} className="nearbyParkCard" onClick={()=>showDetail(p)}><div><b>{p.name}</b><span>{p.district||p.county}・{p._distanceKm.toFixed(1)} km</span></div><Navigation size={17} onClick={e=>{e.stopPropagation();map(p)}}/></button>)}</div></section>}{!userCoords&&<div className="nearbyPrompt"><MapPin size={17}/>開啟定位後會顯示附近公園</div>}<button className="modifyBtn" onClick={()=>setResult(null)}>修改條件</button>
      </>}
    </section>}
