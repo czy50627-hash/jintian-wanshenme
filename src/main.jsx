@@ -195,7 +195,7 @@ function App(){
    <header className="appHeader"><div className="logoText">今天玩什麼<span>✦</span></div><button className="menuBtn"><Menu size={25}/></button></header>
 
    {!result ? <>
-     <section className="introHero photoHero"><img className="heroFamilyImg" src="/assets/hero-family.webp" alt="" aria-hidden="true"/><div className="heroShade"></div><div className="heroCopy"><h1>不知道去哪？<br/><strong>今天玩什麼</strong><br/>幫你決定！</h1><div className="heroUnderline"></div><p>輸入幾個條件，馬上推薦最適合你們的親子行程。</p></div></section>
+     <section className="introHero photoHero"><img className="heroFamilyImg" src="/assets/hero-family-v3.webp" alt="" aria-hidden="true"/><div className="heroShade"></div><div className="heroCopy"><h1>不知道去哪？<br/><strong>今天玩什麼</strong><br/>幫你決定！</h1><div className="heroUnderline"></div><p>輸入幾個條件，馬上推薦最適合你們的親子行程。</p></div></section>
      <section className="decisionPanel">
        <h2>孩子幾歲？ <span>（可複選）</span></h2>
        <div className="ageChoiceGrid">{AGES.map(a=><button key={a.id} className={ages.includes(a.id)?"choiceCard selected":"choiceCard"} onClick={()=>toggleAge(a.id)}><div className="kidBadge"><Baby size={22}/></div><div><b>{a.label}</b><small>{a.sub}</small></div></button>)}</div>
