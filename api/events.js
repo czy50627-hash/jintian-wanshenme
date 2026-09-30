@@ -9,6 +9,10 @@ function text(v){if(v==null)return"";if(typeof v==="string"||typeof v==="number"
 const alias={"台北":"臺北市","新北":"新北市","桃園":"桃園市","新竹":"新竹","苗栗":"苗栗縣","台中":"臺中市","彰化":"彰化縣","南投":"南投縣","雲林":"雲林縣","嘉義":"嘉義","台南":"臺南市","高雄":"高雄市","屏東":"屏東縣","宜蘭":"宜蘭縣","花蓮":"花蓮縣","台東":"臺東縣","基隆":"基隆市","澎湖":"澎湖縣","金門":"金門縣","連江":"連江縣"};
 function cityName(r){const s=text(r.LocatedCities||r.PostalAddress||"");const m=s.match(/(臺北市|台北市|新北市|桃園市|新竹市|新竹縣|苗栗縣|臺中市|台中市|彰化縣|南投縣|雲林縣|嘉義市|嘉義縣|臺南市|台南市|高雄市|屏東縣|宜蘭縣|花蓮縣|臺東縣|台東縣|基隆市|澎湖縣|金門縣|連江縣)/);return m?.[1]||""}
 function match(city,county){const a=alias[county]||county;if(county==="新竹")return /新竹[市縣]/.test(city);if(county==="嘉義")return /嘉義[市縣]/.test(city);return city===a||city.replace(/^台/,"臺")===a}
+function appCounty(city){
+  const pairs=[["臺北市","台北"],["台北市","台北"],["新北市","新北"],["桃園市","桃園"],["新竹市","新竹"],["新竹縣","新竹"],["苗栗縣","苗栗"],["臺中市","台中"],["台中市","台中"],["彰化縣","彰化"],["南投縣","南投"],["雲林縣","雲林"],["嘉義市","嘉義"],["嘉義縣","嘉義"],["臺南市","台南"],["台南市","台南"],["高雄市","高雄"],["屏東縣","屏東"],["宜蘭縣","宜蘭"],["花蓮縣","花蓮"],["臺東縣","台東"],["台東縣","台東"],["基隆市","基隆"],["澎湖縣","澎湖"],["金門縣","金門"],["連江縣","連江"]];
+  return pairs.find(([a])=>a===city)?.[1]||city;
+}
 function normalize(r){
   const title=text(r.EventName||r.Name).trim(); if(!title)return null;
   const start=text(r.StartDateTime||r.StartDate||"").slice(0,10);
@@ -19,7 +23,7 @@ function normalize(r){
   if(!family)return null;
   return {
     id:"tourism-event-"+text(r.EventID||r.Id||title).replace(/\s+/g,"-"),
-    title,county:city,venue:text(r.PostalAddress||r.Venue||r.Location).trim()||null,
+    title,county:appCounty(city),venue:text(r.PostalAddress||r.Venue||r.Location).trim()||null,
     startDate:start,endDate:end||start,
     type:/限定|期間|特展|季|展/.test(full)?"limited":"weekend",
     indoor:/室內|館|博物館|美術館/.test(full),
