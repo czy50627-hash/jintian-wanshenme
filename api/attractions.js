@@ -87,7 +87,7 @@ async function load(){
   if(!entries.length) throw new Error("json missing");
   let obj;
   for(const e of entries){
-    try{obj=JSON.parse(e.getData().toString("utf8").replace(/^\\uFEFF/,""));break}catch{}
+    try{obj=JSON.parse(e.getData().toString("utf8").replace(/^\uFEFF/,""));break}catch{}
   }
   if(!obj) throw new Error("invalid json");
   const arrays=allArrays(obj).filter(a=>a.length&&typeof a[0]==="object");
