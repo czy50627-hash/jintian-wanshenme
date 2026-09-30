@@ -53,6 +53,7 @@ function App(){
  const [parksLoading,setParksLoading]=useState(false);
  const [nearbyMappedParks,setNearbyMappedParks]=useState([]);
  const [events,setEvents]=useState([]);
+ const [officialFeedLoading,setOfficialFeedLoading]=useState(false);
 
  useEffect(()=>{
    Promise.all([
@@ -75,6 +76,26 @@ function App(){
  },[]);
 
  useEffect(()=>{localStorage.setItem("jtw-family",JSON.stringify({ages,county,prefs,maxDrive,transport}))},[ages,county,prefs,maxDrive,transport]);
+ useEffect(()=>{
+   let live=true; setOfficialFeedLoading(true);
+   Promise.all([
+     fetch("/api/attractions?county="+encodeURIComponent(county)).then(r=>r.ok?r.json():({records:[]})).catch(()=>({records:[]})),
+     fetch("/api/events?county="+encodeURIComponent(county)).then(r=>r.ok?r.json():({records:[]})).catch(()=>({records:[]}))
+   ]).then(([a,e])=>{
+     if(!live)return;
+     setPlaces(prev=>{
+       const m=new Map(prev.map(p=>[p.id,p]));
+       for(const row of (a.records||[]))m.set(row.id,normalizePlace(row));
+       return [...m.values()];
+     });
+     setEvents(prev=>{
+       const m=new Map(prev.map(x=>[x.id,x]));
+       for(const row of (e.records||[]))m.set(row.id,row);
+       return [...m.values()];
+     });
+   }).finally(()=>{if(live)setOfficialFeedLoading(false)});
+   return ()=>{live=false};
+ },[county]);
  useEffect(()=>{
    let live=true; setParksLoading(true);
    fetchCountyParks(county).then(rows=>{if(live)setCountyParks(rows)}).catch(()=>{if(live)setCountyParks([])}).finally(()=>{if(live)setParksLoading(false)});
@@ -189,7 +210,7 @@ function App(){
        <div className="altsHeader"><h2>另外兩個備選方案</h2><button onClick={reroll}><RotateCcw size={16}/>換一批推薦</button></div>
        <div className="altStack">{(result.alternatives||[]).map(p=><article className="altResultCard" key={p.id}><button className="altThumb" onClick={()=>showDetail(p)}><PlaceVisual place={p} compact/></button><div className="altContent"><h3 onClick={()=>showDetail(p)}>{p.name}</h3><p>{p.county}・{typeLabel(p)}</p><div className="altMeta"><span>{transport==="transit"?<Bus/>:<Car/>}{transport==="transit"?(p._nearestTransit?.name||"站點待補"):(p._driveMinutes!=null?("約 "+p._driveMinutes+" 分"):"定位後估算")}</span><span>{priceLabel(p)}</span></div><div className="altTags"><span>{p.indoor?"室內":"戶外"}</span>{p.isFree&&<span>免費</span>}</div></div><div className="altButtons"><button onClick={()=>map(p)}><Navigation size={16}/>導航</button><button onClick={()=>share(p)}><Share2 size={15}/>分享</button></div></article>)}{(result.alternatives||[]).length<2&&<div className="emptyAlt">沒有更多安全備選，系統不會跨縣市硬補。</div>}</div>
        {(result.events||[]).length>0&&<section className="eventSection"><div className="sectionTitleRow"><div><span className="sectionKicker">這週可以去</span><h2>本週活動・期間限定</h2></div><CalendarDays size={22}/></div><div className="eventList">{result.events.map(e=><a key={e.id} className="eventCard" href={e.sourceUrl} target="_blank" rel="noreferrer"><div className={"eventRibbon "+e.type}>{e.type==="weekend"?"本週活動":"期間限定"}</div><div className="eventCardBody"><b>{e.title}</b><p>{e.venue}</p><div className="eventMeta"><span>{e.startDate===e.endDate?e.startDate:e.startDate+" ～ "+e.endDate}</span><span>{e.isFree===true?"免費":"費用依官方公告"}</span></div><small>{e.description}</small></div><ExternalLink size={16}/></a>)}</div></section>}
-       <section className="parkDirectory"><div className="nearbyHead"><div><h2>{county}公園／共融遊戲場</h2><p>{parksLoading?"資料載入中…":`地圖資料共 ${countyParks.length} 筆`}</p></div><TreePine size={20}/></div>{parksLoading?<div className="parkLoading">正在讀取公園資料…</div>:<div className="parkDirectoryGrid">{countyParks.slice(0,12).map(p=><button key={p.id} className="parkChip" onClick={()=>{setCounty(p.county||county);setNotice(`${p.name} 為地圖資料，設施請以現場為準`)}}><b>{p.name}</b><span>{p.inclusive?"共融遊戲場":p.category==="playground"?"兒童遊戲場":"公園"}</span></button>)}</div>}</section>{userCoords&&nearbyParks.length>0&&<section className="nearbyParks"><div className="nearbyHead"><div><h2>附近公園</h2><p>依你目前定位，以直線距離排序</p></div><MapPin size={20}/></div><div className="nearbyParkList">{nearbyParks.map(p=><button key={p.id} className="nearbyParkCard" onClick={()=>showDetail(p)}><div><b>{p.name}</b><span>{p.district||p.county}・{p._distanceKm.toFixed(1)} km</span></div><Navigation size={17} onClick={e=>{e.stopPropagation();map(p)}}/></button>)}</div></section>}{!userCoords&&<div className="nearbyPrompt"><MapPin size={17}/>開啟定位後會顯示附近公園</div>}<button className="modifyBtn" onClick={()=>setResult(null)}>修改條件</button>
+       <section className="parkDirectory"><div className="nearbyHead"><div><h2>{county}公園／共融遊戲場</h2><p>{parksLoading||officialFeedLoading?"資料載入中…":`公園地圖 ${countyParks.length} 筆・官方親子景點 ${places.filter(p=>p.county===county).length} 筆`}</p></div><TreePine size={20}/></div>{parksLoading?<div className="parkLoading">正在讀取公園資料…</div>:<div className="parkDirectoryGrid">{countyParks.slice(0,12).map(p=><button key={p.id} className="parkChip" onClick={()=>{setCounty(p.county||county);setNotice(`${p.name} 為地圖資料，設施請以現場為準`)}}><b>{p.name}</b><span>{p.inclusive?"共融遊戲場":p.category==="playground"?"兒童遊戲場":"公園"}</span></button>)}</div>}</section>{userCoords&&nearbyParks.length>0&&<section className="nearbyParks"><div className="nearbyHead"><div><h2>附近公園</h2><p>依你目前定位，以直線距離排序</p></div><MapPin size={20}/></div><div className="nearbyParkList">{nearbyParks.map(p=><button key={p.id} className="nearbyParkCard" onClick={()=>showDetail(p)}><div><b>{p.name}</b><span>{p.district||p.county}・{p._distanceKm.toFixed(1)} km</span></div><Navigation size={17} onClick={e=>{e.stopPropagation();map(p)}}/></button>)}</div></section>}{!userCoords&&<div className="nearbyPrompt"><MapPin size={17}/>開啟定位後會顯示附近公園</div>}<button className="modifyBtn" onClick={()=>setResult(null)}>修改條件</button>
      </>}
    </section>}
    {notice&&<div className="toast" onClick={()=>setNotice("")}>{notice}</div>}
