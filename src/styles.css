@@ -184,3 +184,17 @@ body{background:linear-gradient(90deg,#eaf8fb,#fffaf0 25%,#fffaf0 75%,#eaf8fb)}
   .heroCopy h1{font-size:31px}.heroCopy h1 strong{font-size:41px}
   .introHero{min-height:350px}.parkDirectoryGrid{grid-template-columns:1fr}
 }
+
+/* v6 hero: approved cute family artwork as actual image, not placeholder graphics */
+.photoHero{position:relative;min-height:470px;height:470px;overflow:hidden;background:#dff5ff}
+.heroFamilyImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 58%;display:block;z-index:0}
+.heroShade{position:absolute;inset:0;z-index:1;background:
+  linear-gradient(180deg,rgba(243,251,255,.98) 0%,rgba(243,251,255,.88) 22%,rgba(243,251,255,.18) 48%,rgba(255,255,255,0) 66%),
+  linear-gradient(90deg,rgba(255,255,255,.10),rgba(255,255,255,0) 55%);
+}
+.photoHero .heroCopy{position:relative;z-index:2;padding:28px 25px 0;text-align:center}
+.photoHero .heroCopy h1{font-size:35px;line-height:1.16;color:#132d38;text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.photoHero .heroCopy h1 strong{font-size:47px}
+.photoHero .heroUnderline{width:72%;margin:-4px auto 12px}
+.photoHero .heroCopy p{background:rgba(255,255,255,.72);backdrop-filter:blur(5px);border-radius:999px;padding:7px 11px;max-width:305px}
+@media(max-width:360px){.photoHero{height:440px;min-height:440px}.photoHero .heroCopy h1{font-size:31px}.photoHero .heroCopy h1 strong{font-size:40px}}
