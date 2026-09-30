@@ -32,6 +32,10 @@ function familyFriendly(r){
   const s=[r.AttractionName,r.Description,r.AttractionClasses,r.Facilities,r.AssetsClass,r.Remarks].map(text).join(" ");
   return /(公園|遊戲場|遊樂|親子|兒童|博物館|美術館|科學|天文|動物園|水族|農場|牧場|觀光工廠|生態|森林|休閒農業|文化館|故事館|樂園|植物園|展館|教育館|探索館|遊客中心)/.test(s);
 }
+function appCounty(city){
+  const pairs=[["臺北市","台北"],["台北市","台北"],["新北市","新北"],["桃園市","桃園"],["新竹市","新竹"],["新竹縣","新竹"],["苗栗縣","苗栗"],["臺中市","台中"],["台中市","台中"],["彰化縣","彰化"],["南投縣","南投"],["雲林縣","雲林"],["嘉義市","嘉義"],["嘉義縣","嘉義"],["臺南市","台南"],["台南市","台南"],["高雄市","高雄"],["屏東縣","屏東"],["宜蘭縣","宜蘭"],["花蓮縣","花蓮"],["臺東縣","台東"],["台東縣","台東"],["基隆市","基隆"],["澎湖縣","澎湖"],["金門縣","金門"],["連江縣","連江"]];
+  return pairs.find(([a])=>a===city)?.[1]||city;
+}
 function normalize(r){
   const name=text(r.AttractionName||r.Name).trim();
   const lat=Number(r.PositionLat??r.Py??r.lat);
@@ -51,7 +55,7 @@ function normalize(r){
     id:"tourism-"+text(r.AttractionID||r.Id||name).replace(/\s+/g,"-"),
     slug:"",
     name,
-    county:city,
+    county:appCounty(city),
     district:null,
     address:text(r.PostalAddress||r.Address||r.Add).trim()||null,
     lat,lng,isCoordinatePrecise:true,category,indoor,outdoor,covered,
