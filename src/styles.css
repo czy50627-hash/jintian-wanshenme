@@ -23,3 +23,35 @@
 
 .previewWarning{margin:9px 0 13px;padding:10px 12px;border-radius:12px;background:#fff4df;color:#8a641f;font-size:11px;line-height:1.5;border:1px solid #f3ddb0}
 .navPrimary:disabled{background:#d9dfdc;color:#75817c;cursor:not-allowed}
+
+/* Hero v4: single clean scene; no raster mockup or text-over-image collision */
+.introHero{position:relative;height:auto;min-height:430px;background:linear-gradient(180deg,#e8f8ff 0%,#f9fbf3 58%,#fef7e9 100%);display:flex;flex-direction:column;overflow:hidden;padding:0}
+.heroCopy{position:relative;z-index:2;top:auto;left:auto;right:auto;padding:28px 26px 8px;text-align:center;pointer-events:auto}
+.heroCopy h1{font-size:34px;line-height:1.14;color:#173b48;text-shadow:none;margin:0}
+.heroCopy h1 strong{font-size:41px}
+.heroCopy p{max-width:310px;margin:11px auto 0;background:transparent;backdrop-filter:none;padding:0;color:#4f6970}
+.heroArtwork{position:relative;inset:auto;width:100%;height:245px;padding:0;margin:0;z-index:1}
+.heroArtwork:after{display:none}
+.heroScene{position:relative;width:100%;height:100%;overflow:hidden}
+.heroSun{position:absolute;width:64px;height:64px;border-radius:50%;background:#ffd76d;right:52px;top:24px;box-shadow:0 0 0 12px rgba(255,215,109,.18)}
+.heroHill{position:absolute;left:-8%;width:116%;border-radius:50% 50% 0 0}
+.heroHillBack{height:145px;bottom:36px;background:#b7dfc1;transform:rotate(-2deg)}
+.heroHillFront{height:118px;bottom:-3px;background:#7fc695;transform:rotate(2deg)}
+.heroPath{position:absolute;width:180px;height:90px;border-radius:50%;background:#f6dfae;bottom:-18px;left:50%;transform:translateX(-50%) rotate(-6deg)}
+.heroTree{position:absolute;width:14px;height:76px;background:#856447;border-radius:8px;bottom:52px}
+.heroTree:before,.heroTree:after{content:"";position:absolute;border-radius:50%;background:#4f9f68}
+.heroTree:before{width:60px;height:60px;left:-23px;top:-38px}
+.heroTree:after{width:46px;height:46px;left:-15px;top:-14px;background:#68b47c}
+.heroTreeOne{left:54px}.heroTreeTwo{right:82px;transform:scale(.82)}
+@media(max-width:360px){.introHero{min-height:400px}.heroArtwork{height:220px}.heroCopy h1{font-size:30px}.heroCopy h1 strong{font-size:36px}}
+
+.transitHint{margin-top:12px;padding:11px 12px;border-radius:14px;background:#eef8ff;color:#3979a8;display:flex;gap:8px;align-items:flex-start;font-size:11px;line-height:1.45}
+.transportChoice small{display:block;font-size:9px;font-weight:500;margin-left:4px}
+.quickLine>span{flex:1}
+.nearbyParks{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px}
+.nearbyHead{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.nearbyHead h2{font-size:16px;margin:0}.nearbyHead p{font-size:10px;color:var(--muted);margin:3px 0 0}.nearbyHead svg{color:#3c98cc}
+.nearbyParkList{display:grid;gap:8px}
+.nearbyParkCard{border:1px solid #e8ece7;background:#fbfff9;border-radius:14px;min-height:54px;padding:9px 11px;display:flex;align-items:center;justify-content:space-between;text-align:left}
+.nearbyParkCard b,.nearbyParkCard span{display:block}.nearbyParkCard b{font-size:13px}.nearbyParkCard span{font-size:10px;color:var(--muted);margin-top:3px}.nearbyParkCard>svg{color:#2f9c6b}
+.nearbyPrompt{margin-top:14px;border:1px dashed #cddbd5;border-radius:13px;padding:10px 12px;color:#6b7b77;font-size:11px;display:flex;align-items:center;gap:6px}
