@@ -52,11 +52,15 @@ function App(){
  const [countyParks,setCountyParks]=useState([]);
  const [parksLoading,setParksLoading]=useState(false);
  const [nearbyMappedParks,setNearbyMappedParks]=useState([]);
+ const [events,setEvents]=useState([]);
 
  useEffect(()=>{
-   fetch("/data/places.production.json").then(r=>r.json()).then(prod=>{
+   Promise.all([
+     fetch("/data/places.production.json").then(r=>r.json()),
+     fetch("/data/events.production.json").then(r=>r.json()).catch(()=>({records:[]}))
+   ]).then(([prod,eventData])=>{
      const pp=(prod.records||[]).map(normalizePlace);
-     setPlaces(pp);
+     setPlaces(pp); setEvents(eventData.records||[]);
      const m=location.pathname.match(/^\/r\/([^/]+)/);
      if(m){
        const id=decodeURIComponent(m[1]); const q=new URLSearchParams(location.search); const found=pp.find(p=>p.id===id);
@@ -90,6 +94,20 @@ function App(){
 
  const currentPrefs=useMemo(()=>({selectedCounty:county,userCoords,ages,when,maxDriveMinutes:maxDrive,playStyles:prefs,excludedPlaceIds:excluded,currentRainProb:weather?.pop??0,transport}),[county,userCoords,ages,when,maxDrive,prefs,excluded,weather,transport]);
  const production=useMemo(()=>evaluateRecommendations(places,currentPrefs),[places,currentPrefs]);
+ const matchingEvents=useMemo(()=>{
+   const today=new Date("2026-09-30T00:00:00+08:00");
+   const wantsWeekend=prefs.includes("weekend_event");
+   const wantsLimited=prefs.includes("limited_event");
+   return events.filter(e=>{
+     if(e.county!==county) return false;
+     const end=new Date(e.endDate+"T23:59:59+08:00");
+     if(end<today) return false;
+     if(wantsWeekend && e.type!=="weekend") return false;
+     if(wantsLimited && e.type!=="limited") return false;
+     if(!wantsWeekend&&!wantsLimited) return true;
+     return true;
+   }).slice(0,6);
+ },[events,county,prefs]);
  const nearbyParks=useMemo(()=>{
    if(!userCoords) return [];
    const merged=[...places.filter(p=>p.category==="park"||p.category==="playground"),...nearbyMappedParks];
@@ -101,7 +119,7 @@ function App(){
      .slice(0,12);
  },[places,userCoords,nearbyMappedParks]);
 
- function requestLocation(){if(!navigator.geolocation){setNotice("此裝置不支援定位");return}navigator.geolocation.getCurrentPosition(p=>{setUserCoords({lat:p.coords.latitude,lng:p.coords.longitude});setNotice("已取得位置，可估算距離")},()=>{setUserCoords(null);setNotice("未取得定位，仍可用縣市推薦")},{enableHighAccuracy:false,timeout:5000,maximumAge:600000})} function decide(){setExcluded([]);setResult(production)}
+ function requestLocation(){if(!navigator.geolocation){setNotice("此裝置不支援定位");return}navigator.geolocation.getCurrentPosition(p=>{setUserCoords({lat:p.coords.latitude,lng:p.coords.longitude});setNotice("已取得位置，可估算距離")},()=>{setUserCoords(null);setNotice("未取得定位，仍可用縣市推薦")},{enableHighAccuracy:false,timeout:5000,maximumAge:600000})} function decide(){setExcluded([]);setResult({...production,events:matchingEvents})}
  function toggleAge(a){setAges(v=>v.includes(a)?(v.length===1?v:v.filter(x=>x!==a)):[...v,a])}
  function togglePref(p){if(p==="auto"){setPrefs(["auto"]);return}setPrefs(v=>{const next=v.filter(x=>x!=="auto");return next.includes(p)?(next.length===1?["auto"]:next.filter(x=>x!==p)):[...next,p]})}
  function reroll(){if(!result?.hero)return;const ids=[result.hero,...(result.alternatives||[])].map(p=>p.id);const nextExcluded=[...new Set([...excluded,...ids])];setExcluded(nextExcluded);setResult(evaluateRecommendations(places,{...currentPrefs,excludedPlaceIds:nextExcluded}))}
@@ -142,7 +160,7 @@ function App(){
        <h2>想怎麼玩？ <span>（可複選）</span></h2>
        <div className="playGrid">
          {[["outdoor","戶外放電",TreePine],["indoor","室內玩樂",House],["free","免費景點",WalletCards],["auto","自動最適",Umbrella]].map(([id,label,Icon])=><button key={id} className={prefs.includes(id)?"playCard selected":"playCard"} onClick={()=>togglePref(id)}><Icon size={24}/><b>{label}</b></button>)}
-         <button className="playCard disabledCard" disabled><CalendarDays size={24}/><b>本週活動</b><small>資料建置中</small></button><button className="playCard disabledCard" disabled><Star size={24}/><b>期間限定</b><small>資料建置中</small></button>
+         <button className={prefs.includes("weekend_event")?"playCard selected eventPick":"playCard eventPick"} onClick={()=>togglePref("weekend_event")}><CalendarDays size={24}/><b>本週活動</b><small>{events.filter(e=>e.county===county&&e.type==="weekend").length} 筆</small></button><button className={prefs.includes("limited_event")?"playCard selected eventPick":"playCard eventPick"} onClick={()=>togglePref("limited_event")}><Star size={24}/><b>期間限定</b><small>{events.filter(e=>e.county===county&&e.type==="limited").length} 筆</small></button>
        </div>
        <h2>何時出發？</h2>
        <div className="whenGrid">{[["now","現在",SunMedium],["afternoon","今天下午",Clock3],["tomorrow","明天",CalendarDays],["weekend","這週末",CalendarDays]].map(([id,label,Icon])=><button key={id} className={when===id?"miniChoice selected":"miniChoice"} onClick={()=>setWhen(id)}><Icon size={21}/><span>{label}</span></button>)}</div>
@@ -155,9 +173,9 @@ function App(){
      </section>
    </> : <section className="resultScreen">
      <div className="weatherBanner"><MapPin size={19}/><div><b>{county}・{weather?"目前天氣":"天氣讀取中"}</b><span>{weather?("降雨機率 "+weather.pop+"%・"+Math.round(weather.temp)+"°C"):"依選擇縣市自動判斷"}</span></div><SunMedium className="sunIcon"/></div>
-     {!result.hero ? <div className="empty prettyEmpty"><div className="emptyArt"><Umbrella size={38}/></div><h3>這個條件目前沒有通過驗證的選擇</h3><p>{result.fallbackNote}</p><div className="emptyActions">{prefs.includes("indoor")&&<button onClick={()=>{setPrefs(["outdoor"]);setResult(null)}}>改看戶外</button>}{prefs.includes("free")&&<button onClick={()=>{setPrefs(v=>v.filter(x=>x!=="free"));setResult(null)}}>接受門票</button>}<button onClick={()=>setResult(null)}>重新調整</button></div></div> : <>
+     {!result.hero && !(result.events||[]).length ? <div className="empty prettyEmpty"><div className="emptyArt"><Umbrella size={38}/></div><h3>這個條件目前沒有通過驗證的選擇</h3><p>{result.fallbackNote}</p><div className="emptyActions">{prefs.includes("indoor")&&<button onClick={()=>{setPrefs(["outdoor"]);setResult(null)}}>改看戶外</button>}{prefs.includes("free")&&<button onClick={()=>{setPrefs(v=>v.filter(x=>x!=="free"));setResult(null)}}>接受門票</button>}<button onClick={()=>setResult(null)}>重新調整</button></div></div> : <>
        <div className="resultIntro"><div className="avatarMom"><Baby size={25}/></div><div><b>根據你選的條件</b><span>今天最適合的行程是…</span></div><Heart size={21}/></div>
-       <article className="heroResultCard">
+       {result.hero&&<article className="heroResultCard">
          <div className="heroImageWrap"><PlaceVisual place={result.hero}/><span className="crownBadge">首選推薦</span></div>
          <div className="heroResultBody">
            <h1 onClick={()=>showDetail(result.hero)}>{result.hero.name}</h1><p>{result.hero.county}・{typeLabel(result.hero)}</p>
@@ -167,9 +185,10 @@ function App(){
            <div className="whyBox"><h3>為什麼推薦給你？</h3>{reason(result.hero).split("・").slice(0,4).map((r,i)=><p key={i}><span>✓</span>{r}</p>)}</div>
            <div className="mainActions"><button className="navPrimary" onClick={()=>map(result.hero)} disabled={!result.hero.isCoordinatePrecise}><Navigation size={19}/>導航去這裡</button><button className="shareSecondary" onClick={()=>share(result.hero)}><Share2 size={18}/>傳給另一半</button></div>
          </div>
-       </article>
+       </article>}
        <div className="altsHeader"><h2>另外兩個備選方案</h2><button onClick={reroll}><RotateCcw size={16}/>換一批推薦</button></div>
        <div className="altStack">{(result.alternatives||[]).map(p=><article className="altResultCard" key={p.id}><button className="altThumb" onClick={()=>showDetail(p)}><PlaceVisual place={p} compact/></button><div className="altContent"><h3 onClick={()=>showDetail(p)}>{p.name}</h3><p>{p.county}・{typeLabel(p)}</p><div className="altMeta"><span>{transport==="transit"?<Bus/>:<Car/>}{transport==="transit"?(p._nearestTransit?.name||"站點待補"):(p._driveMinutes!=null?("約 "+p._driveMinutes+" 分"):"定位後估算")}</span><span>{priceLabel(p)}</span></div><div className="altTags"><span>{p.indoor?"室內":"戶外"}</span>{p.isFree&&<span>免費</span>}</div></div><div className="altButtons"><button onClick={()=>map(p)}><Navigation size={16}/>導航</button><button onClick={()=>share(p)}><Share2 size={15}/>分享</button></div></article>)}{(result.alternatives||[]).length<2&&<div className="emptyAlt">沒有更多安全備選，系統不會跨縣市硬補。</div>}</div>
+       {(result.events||[]).length>0&&<section className="eventSection"><div className="sectionTitleRow"><div><span className="sectionKicker">這週可以去</span><h2>本週活動・期間限定</h2></div><CalendarDays size={22}/></div><div className="eventList">{result.events.map(e=><a key={e.id} className="eventCard" href={e.sourceUrl} target="_blank" rel="noreferrer"><div className={"eventRibbon "+e.type}>{e.type==="weekend"?"本週活動":"期間限定"}</div><div className="eventCardBody"><b>{e.title}</b><p>{e.venue}</p><div className="eventMeta"><span>{e.startDate===e.endDate?e.startDate:e.startDate+" ～ "+e.endDate}</span><span>{e.isFree===true?"免費":"費用依官方公告"}</span></div><small>{e.description}</small></div><ExternalLink size={16}/></a>)}</div></section>}
        <section className="parkDirectory"><div className="nearbyHead"><div><h2>{county}公園／共融遊戲場</h2><p>{parksLoading?"資料載入中…":`地圖資料共 ${countyParks.length} 筆`}</p></div><TreePine size={20}/></div>{parksLoading?<div className="parkLoading">正在讀取公園資料…</div>:<div className="parkDirectoryGrid">{countyParks.slice(0,12).map(p=><button key={p.id} className="parkChip" onClick={()=>{setCounty(p.county||county);setNotice(`${p.name} 為地圖資料，設施請以現場為準`)}}><b>{p.name}</b><span>{p.inclusive?"共融遊戲場":p.category==="playground"?"兒童遊戲場":"公園"}</span></button>)}</div>}</section>{userCoords&&nearbyParks.length>0&&<section className="nearbyParks"><div className="nearbyHead"><div><h2>附近公園</h2><p>依你目前定位，以直線距離排序</p></div><MapPin size={20}/></div><div className="nearbyParkList">{nearbyParks.map(p=><button key={p.id} className="nearbyParkCard" onClick={()=>showDetail(p)}><div><b>{p.name}</b><span>{p.district||p.county}・{p._distanceKm.toFixed(1)} km</span></div><Navigation size={17} onClick={e=>{e.stopPropagation();map(p)}}/></button>)}</div></section>}{!userCoords&&<div className="nearbyPrompt"><MapPin size={17}/>開啟定位後會顯示附近公園</div>}<button className="modifyBtn" onClick={()=>setResult(null)}>修改條件</button>
      </>}
    </section>}
