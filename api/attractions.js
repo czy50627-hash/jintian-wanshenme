@@ -99,7 +99,10 @@ export default async function handler(req,res){
   try{
     const county=String(req.query.county||"");
     const raw=await load();
-    const rows=raw.filter(r=>familyFriendly(r)&&(!county||countyMatch(cityName(r),county))).map(normalize).filter(Boolean).slice(0,250);
+    const inCounty=raw.filter(r=>!county||countyMatch(cityName(r),county));
+    const preferred=inCounty.filter(familyFriendly);
+    const remainder=inCounty.filter(r=>!familyFriendly(r));
+    const rows=[...preferred,...remainder].map(normalize).filter(Boolean).slice(0,300);
     res.setHeader("Cache-Control","s-maxage=21600, stale-while-revalidate=86400");
     res.status(200).json({count:rows.length,records:rows});
   }catch(e){res.status(502).json({error:String(e.message||e),count:0,records:[]})}
