@@ -17,9 +17,12 @@ function text(v){
   return "";
 }
 function cityName(r){
-  const s=text(r.LocatedCities||r.PostalAddress||r.Address||"");
-  const m=s.match(/(臺北市|台北市|新北市|桃園市|新竹市|新竹縣|苗栗縣|臺中市|台中市|彰化縣|南投縣|雲林縣|嘉義市|嘉義縣|臺南市|台南市|高雄市|屏東縣|宜蘭縣|花蓮縣|臺東縣|台東縣|基隆市|澎湖縣|金門縣|連江縣)/);
-  return m?.[1]||"";
+  const sources=[text(r.PostalAddress||r.Address||r.Add||""),text(r.LocatedCities||"")];
+  for(const s of sources){
+    const m=s.match(/(臺北市|台北市|新北市|桃園市|新竹市|新竹縣|苗栗縣|臺中市|台中市|彰化縣|南投縣|雲林縣|嘉義市|嘉義縣|臺南市|台南市|高雄市|屏東縣|宜蘭縣|花蓮縣|臺東縣|台東縣|基隆市|澎湖縣|金門縣|連江縣)/);
+    if(m)return m[1];
+  }
+  return "";
 }
 const alias={"台北":"臺北市","新北":"新北市","桃園":"桃園市","新竹":"新竹","苗栗":"苗栗縣","台中":"臺中市","彰化":"彰化縣","南投":"南投縣","雲林":"雲林縣","嘉義":"嘉義","台南":"臺南市","高雄":"高雄市","屏東":"屏東縣","宜蘭":"宜蘭縣","花蓮":"花蓮縣","台東":"臺東縣","基隆":"基隆市","澎湖":"澎湖縣","金門":"金門縣","連江":"連江縣"};
 function countyMatch(city,county){
