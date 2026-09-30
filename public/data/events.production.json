@@ -1,0 +1,97 @@
+{
+  "updatedAt": "2026-09-30T03:55:00.000Z",
+  "count": 4,
+  "records": [
+    {
+      "id": "taipei-jiala-picnic-2026",
+      "title": "2026來加蚋野餐趣・茉茉鹿的秋收派對",
+      "county": "台北",
+      "venue": "青年公園",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-04",
+      "type": "weekend",
+      "indoor": false,
+      "outdoor": true,
+      "isFree": true,
+      "ageTags": [
+        "0-2",
+        "3-5",
+        "6-8",
+        "9-12"
+      ],
+      "description": "主題野餐市集、親子活動、舞台演出與在地商圈體驗。",
+      "sourceLabel": "臺北市商業處",
+      "sourceUrl": "https://www.gov.taipei/News_Content.aspx?n=F0DDAF49B89E9413&s=E895B9760DB536A6",
+      "verifiedAt": "2026-09-30"
+    },
+    {
+      "id": "taipei-astronomy-galaxy-diy-2026",
+      "title": "2026「銀河不可思議之旅」特展假日親子DIY",
+      "county": "台北",
+      "venue": "臺北市立天文科學教育館",
+      "startDate": "2026-10-03",
+      "endDate": "2026-10-11",
+      "occurrenceDates": [
+        "2026-10-03",
+        "2026-10-11"
+      ],
+      "type": "limited",
+      "indoor": true,
+      "outdoor": false,
+      "isFree": null,
+      "ageTags": [
+        "3-5",
+        "6-8",
+        "9-12"
+      ],
+      "description": "特展假日親子DIY活動，需依官方報名資訊參加。",
+      "sourceLabel": "臺北市立天文科學教育館",
+      "sourceUrl": "https://tam.gov.taipei/ActiveList.aspx?n=FD2745F0D4D22B67&sms=7A2486DB66EDA78E",
+      "verifiedAt": "2026-09-30"
+    },
+    {
+      "id": "taipei-pokemon-parade-2026",
+      "title": "寶可夢遊行暨展演活動",
+      "county": "台北",
+      "venue": "香堤大道廣場／臺北市政府周邊",
+      "startDate": "2026-10-10",
+      "endDate": "2026-10-11",
+      "type": "limited",
+      "indoor": false,
+      "outdoor": true,
+      "isFree": null,
+      "ageTags": [
+        "0-2",
+        "3-5",
+        "6-8",
+        "9-12"
+      ],
+      "description": "國慶連假期間於信義區舉辦的寶可夢遊行與展演。",
+      "sourceLabel": "臺北市政府",
+      "sourceUrl": "https://www.gov.taipei/News_Content.aspx?n=F0DDAF49B89E9413&s=0E9C781D49F59C95",
+      "verifiedAt": "2026-09-30"
+    },
+    {
+      "id": "taipei-hakka-yimin-2026",
+      "title": "2026臺北客家義民嘉年華・親子專區",
+      "county": "台北",
+      "venue": "中正紀念堂兩廳院藝文廣場",
+      "startDate": "2026-10-24",
+      "endDate": "2026-10-25",
+      "type": "weekend",
+      "indoor": false,
+      "outdoor": true,
+      "isFree": null,
+      "ageTags": [
+        "0-2",
+        "3-5",
+        "6-8",
+        "9-12"
+      ],
+      "description": "親子互動空間、客語故事屋、手作DIY與親子環保市集。",
+      "sourceLabel": "臺北市政府",
+      "sourceUrl": "https://health.gov.taipei/News_Content.aspx?n=0062E5969868B0FD&s=456CE3563D4987A1&sms=A959FEE6502D221A",
+      "verifiedAt": "2026-09-30"
+    }
+  ]
+}
