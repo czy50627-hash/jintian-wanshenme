@@ -1,6 +1,6 @@
 import AdmZip from "adm-zip";
 
-const URL="https://media.taiwan.net.tw/XMLReleaseAll_public/v2.0/Zh_tw/Activity-json.zip";
+const URL="https://media.taiwan.net.tw/XMLReleaseAll_public/v2.0/Zh_tw/Event-json.zip";
 let cache={ts:0,records:[]};
 const TTL=1000*60*60*3;
 
@@ -42,7 +42,7 @@ async function load(){
   const r=await fetch(URL); if(!r.ok)throw new Error("source "+r.status);
   const zip=new AdmZip(Buffer.from(await r.arrayBuffer()));
   const e=zip.getEntries().find(x=>!x.isDirectory&&/\.json$/i.test(x.entryName)); if(!e)throw new Error("json missing");
-  const obj=JSON.parse(e.getData().toString("utf8"));
+  const obj=JSON.parse(e.getData().toString("utf8").replace(/^\\uFEFF/,""));
   const arr=arrays(obj).filter(a=>a.length&&typeof a[0]==="object").sort((a,b)=>b.length-a.length)[0]||[];
   cache={ts:Date.now(),records:arr};return arr;
 }
