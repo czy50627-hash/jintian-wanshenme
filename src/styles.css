@@ -55,3 +55,49 @@
 .nearbyParkCard{border:1px solid #e8ece7;background:#fbfff9;border-radius:14px;min-height:54px;padding:9px 11px;display:flex;align-items:center;justify-content:space-between;text-align:left}
 .nearbyParkCard b,.nearbyParkCard span{display:block}.nearbyParkCard b{font-size:13px}.nearbyParkCard span{font-size:10px;color:var(--muted);margin-top:3px}.nearbyParkCard>svg{color:#2f9c6b}
 .nearbyPrompt{margin-top:14px;border:1px dashed #cddbd5;border-radius:13px;padding:10px 12px;color:#6b7b77;font-size:11px;display:flex;align-items:center;gap:6px}
+
+/* Reference UI refresh: warm editorial cards, no illustrative hero artwork */
+:root{--paper:#fffdf7;--cream:#fff9ed;--ink:#182f3a;--muted:#6f7b80;--coral:#ff6f6c;--yellow:#ffc83d;--green:#35b875;--blue:#2f8fe8}
+body{background:#edf8fb}
+.phoneShell{background:linear-gradient(180deg,#fbfeff 0%,#fffdf8 42%,#fffaf0 100%)}
+.appHeader{background:rgba(252,254,252,.96);height:68px}
+.logoText{font-size:23px;letter-spacing:-1px;transform:none}
+.introHero{min-height:330px;height:auto;background:linear-gradient(180deg,#eefaff 0%,#fffdf7 100%);display:block;position:relative;overflow:hidden}
+.heroCopy{position:relative;z-index:2;padding:34px 26px 52px;text-align:center}
+.heroCopy h1{font-family:ui-rounded,"Noto Sans TC",system-ui,sans-serif;font-size:34px;line-height:1.22;font-weight:900;letter-spacing:1px;color:#142f3a}
+.heroCopy h1 strong{display:inline-block;font-size:45px;letter-spacing:1px;margin:5px 0}
+.heroUnderline{width:78%;height:8px;background:#ffd447;border-radius:999px;margin:-2px auto 18px;transform:rotate(-5deg)}
+.heroCopy p{font-size:14px;line-height:1.8;font-weight:650;color:#53666e;max-width:310px}
+.heroBackdrop{position:absolute;inset:0;z-index:0;pointer-events:none}
+.heroBackdrop .cloud{position:absolute;width:86px;height:28px;background:rgba(255,255,255,.9);border-radius:999px;filter:blur(.2px)}
+.heroBackdrop .cloud:before,.heroBackdrop .cloud:after{content:"";position:absolute;border-radius:50%;background:inherit}
+.heroBackdrop .cloud:before{width:34px;height:34px;left:12px;top:-14px}.heroBackdrop .cloud:after{width:42px;height:42px;right:12px;top:-18px}
+.heroBackdrop .c1{left:-18px;top:88px}.heroBackdrop .c2{right:-30px;top:146px}
+.heroBackdrop .hill{position:absolute;left:-10%;width:120%;border-radius:50% 50% 0 0}
+.heroBackdrop .h1{height:95px;bottom:-48px;background:#d9eed4}.heroBackdrop .h2{height:68px;bottom:-38px;background:#bfe2bc;transform:rotate(-2deg)}
+.decisionPanel{margin-top:-18px;border-radius:28px 28px 0 0;padding-top:26px;box-shadow:0 -10px 28px rgba(47,80,88,.05)}
+.choiceCard,.playCard,.miniChoice,.transportChoice,.locationPrimary,.locationRow select{box-shadow:0 4px 14px rgba(44,69,73,.04)}
+.decideBtn{background:linear-gradient(90deg,#ff756f,#ff6467);border-radius:22px;min-height:64px;font-size:18px}
+.resultScreen{padding-top:4px}
+.heroResultCard{border-radius:24px;border:0;box-shadow:0 12px 28px rgba(39,70,74,.10)}
+.heroImageWrap{height:220px}
+.placeVisual{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(145deg,#bfe9ff 0%,#dff3c9 48%,#f3e6bc 100%);display:flex;align-items:flex-end;padding:18px}
+.placeVisual.compact{height:104px;border-radius:14px;padding:9px}
+.visualSky,.visualGround{display:none}
+.visualBadge{position:absolute;left:14px;top:14px;background:rgba(255,255,255,.92);padding:6px 9px;border-radius:999px;font-size:10px;font-weight:800;color:#41606b;backdrop-filter:blur(6px)}
+.visualName{position:relative;z-index:2;background:rgba(255,255,255,.9);border-radius:14px;padding:10px 12px;font-size:15px;font-weight:900;line-height:1.25;max-width:88%;box-shadow:0 5px 18px rgba(45,67,68,.08)}
+.placeVisual.compact .visualBadge{display:none}.placeVisual.compact .visualName{font-size:11px;padding:6px 7px;border-radius:9px;max-width:95%}
+.detailHero{height:250px;background:#d9f1e2}
+.parkDirectory,.nearbyParks{margin-top:18px;background:#fff;border:1px solid #ece6da;border-radius:19px;padding:14px;box-shadow:0 8px 22px rgba(50,70,70,.05)}
+.parkDirectoryGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.parkChip{border:1px solid #ece7dd;background:#fffdf8;border-radius:14px;padding:10px;text-align:left;min-height:58px}
+.parkChip b,.parkChip span{display:block}.parkChip b{font-size:12px;line-height:1.3}.parkChip span{font-size:9px;color:#748185;margin-top:4px}
+.parkLoading{padding:14px;text-align:center;color:#7b8587;font-size:11px}
+.nearbyHead h2{font-size:17px}
+.nearbyParkCard{background:#fffdf8}
+.transitHint{border:1px solid #cfe6f5;background:#f4fbff}
+.weatherBanner{border:1px solid #eaf0ec;box-shadow:0 8px 20px rgba(45,70,70,.06)}
+.resultIntro{border:1px solid #eee9df}
+.mainActions .navPrimary,.stickyActions .navPrimary{background:linear-gradient(90deg,#31b66f,#48c58a)}
+.shareSecondary{background:#fff}
+@media(max-width:360px){.heroCopy h1{font-size:30px}.heroCopy h1 strong{font-size:39px}.parkDirectoryGrid{grid-template-columns:1fr}}
