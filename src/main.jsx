@@ -1,7 +1,7 @@
 import React,{useEffect,useMemo,useState} from "react";
 import {createRoot} from "react-dom/client";
 import {
-  MapPin,Share2,RotateCcw,Menu,Car,Bus,Clock3,Star,
+  MapPin,Share2,RotateCcw,Menu,X,Car,Bus,Clock3,Star,
   ShieldCheck,Heart,ArrowLeft,ExternalLink,CalendarDays,Umbrella,
   TreePine,House,WalletCards,Navigation,Utensils,ParkingCircle,
   Baby,Accessibility,SunMedium
@@ -78,6 +78,7 @@ function App(){
  const [nearbyMappedParks,setNearbyMappedParks]=useState([]);
  const [events,setEvents]=useState([]);
  const [officialFeedLoading,setOfficialFeedLoading]=useState(false);
+ const [menuOpen,setMenuOpen]=useState(false);
 
  useEffect(()=>{
    Promise.all([
@@ -166,6 +167,15 @@ function App(){
  function togglePref(p){if(p==="auto"){setPrefs(["auto"]);return}setPrefs(v=>{const next=v.filter(x=>x!=="auto");return next.includes(p)?(next.length===1?["auto"]:next.filter(x=>x!==p)):[...next,p]})}
  function reroll(){if(!result?.hero)return;const ids=[result.hero,...(result.alternatives||[])].map(p=>p.id);const nextExcluded=[...new Set([...excluded,...ids])];setExcluded(nextExcluded);setResult(evaluateRecommendations(places,{...currentPrefs,excludedPlaceIds:nextExcluded}))}
  function share(p){const url=location.origin+"/r/"+p.id+"?ages="+ages.join(",")+"&county="+encodeURIComponent(county)+"&when="+when;if(navigator.share)navigator.share({title:p.name,text:"今天帶小孩去【"+p.name+"】好不好？",url}).catch(()=>{});else navigator.clipboard?.writeText(url).then(()=>setNotice("推薦連結已複製"))}
+ function goHome(target){
+   setMenuOpen(false);
+   if(result){setResult(null);setDetailPlace(null)}
+   setTimeout(()=>{
+     const el=document.getElementById(target);
+     if(el)el.scrollIntoView({behavior:"smooth",block:"start"});
+     else window.scrollTo({top:0,behavior:"smooth"});
+   },80);
+ }
  function map(p){if(!p.isCoordinatePrecise){setNotice("此點位座標尚未完成驗證");return}const mode=transport==="transit"?"transit":"driving";window.open("https://www.google.com/maps/dir/?api=1&travelmode="+mode+"&destination="+p.lat+","+p.lng,"_blank")}
  function typeLabel(p){return p.category==="park"?"公園・戶外":p.indoor&&!p.outdoor?"室內":"親子景點"}
  function reason(p){return generateEvidenceReason(p,currentPrefs)}
@@ -191,22 +201,28 @@ function App(){
    </main>
  }
 
- return <main className={result?"phoneShell resultMode":"phoneShell"}>
-   <header className="appHeader"><div className="logoText">今天玩什麼<span>✦</span></div><button className="menuBtn"><Menu size={25}/></button></header>
+ return <main id="top" className={result?"phoneShell resultMode":"phoneShell"}>
+   <header className="appHeader"><button className="brandBtn" onClick={()=>goHome("top")}><div className="logoText">今天玩什麼<span>✦</span></div></button><button className="menuBtn" aria-label={menuOpen?"關閉選單":"開啟選單"} aria-expanded={menuOpen} onClick={()=>setMenuOpen(v=>!v)}>{menuOpen?<X size={25}/>:<Menu size={25}/>}</button></header>
+   {menuOpen&&<><button className="menuScrim" aria-label="關閉選單" onClick={()=>setMenuOpen(false)}></button><nav className="siteMenu" aria-label="網站選單">
+     <button onClick={()=>goHome("top")}><House size={18}/><span><b>首頁</b><small>回到今天玩什麼</small></span></button>
+     <button onClick={()=>goHome("decision")}><Star size={18}/><span><b>開始幫我決定</b><small>選年齡、玩法與地區</small></span></button>
+     <button onClick={()=>goHome("play-options")}><CalendarDays size={18}/><span><b>本週活動／期間限定</b><small>查看活動篩選</small></span></button>
+     <button onClick={()=>goHome("location-options")}><MapPin size={18}/><span><b>選擇縣市</b><small>切換全台地區</small></span></button>
+   </nav></>}
 
    {!result ? <>
-     <section className="introHero photoHero"><img className="heroFamilyImg" src="/assets/hero-family-v3.webp" alt="" aria-hidden="true"/><div className="heroShade"></div><div className="heroCopy"><h1>不知道去哪？<br/><strong>今天玩什麼</strong><br/>幫你決定！</h1><div className="heroUnderline"></div><p>輸入幾個條件，馬上推薦最適合你們的親子行程。</p></div></section>
-     <section className="decisionPanel">
+     <section className="introHero photoHero"><picture className="heroFamilyPicture" aria-hidden="true"><source media="(min-width: 768px)" srcSet="/assets/hero-family-v3.webp"/><source media="(max-width: 767px)" srcSet="/assets/hero-family-v3.webp"/><img className="heroFamilyImg" src="/assets/hero-family-v3.webp" alt="" fetchPriority="high" decoding="async"/></picture><div className="heroShade"></div><div className="heroCopy"><h1>不知道去哪？<br/><strong>今天玩什麼</strong><br/>幫你決定！</h1><div className="heroUnderline"></div><p>輸入幾個條件，馬上推薦最適合你們的親子行程。</p></div></section>
+     <section id="decision" className="decisionPanel">
        <h2>孩子幾歲？ <span>（可複選）</span></h2>
        <div className="ageChoiceGrid">{AGES.map(a=><button key={a.id} className={ages.includes(a.id)?"choiceCard selected":"choiceCard"} onClick={()=>toggleAge(a.id)}><div className="kidBadge"><Baby size={22}/></div><div><b>{a.label}</b><small>{a.sub}</small></div></button>)}</div>
-       <h2>想怎麼玩？ <span>（可複選）</span></h2>
+       <h2 id="play-options">想怎麼玩？ <span>（可複選）</span></h2>
        <div className="playGrid">
          {[["outdoor","戶外放電",TreePine],["indoor","室內玩樂",House],["free","免費景點",WalletCards],["auto","自動最適",Umbrella]].map(([id,label,Icon])=><button key={id} className={prefs.includes(id)?"playCard selected":"playCard"} onClick={()=>togglePref(id)}><Icon size={24}/><b>{label}</b></button>)}
          <button className={prefs.includes("weekend_event")?"playCard selected eventPick":"playCard eventPick"} onClick={()=>togglePref("weekend_event")}><CalendarDays size={24}/><b>本週活動</b><small>{events.filter(e=>e.county===county&&isCurrentWeekEvent(e)).length} 筆</small></button><button className={prefs.includes("limited_event")?"playCard selected eventPick":"playCard eventPick"} onClick={()=>togglePref("limited_event")}><Star size={24}/><b>期間限定</b><small>{events.filter(e=>e.county===county&&isUpcomingLimited(e)).length} 筆</small></button>
        </div>
        <h2>何時出發？</h2>
        <div className="whenGrid">{[["now","現在",SunMedium],["afternoon","今天下午",Clock3],["tomorrow","明天",CalendarDays],["weekend","這週末",CalendarDays]].map(([id,label,Icon])=><button key={id} className={when===id?"miniChoice selected":"miniChoice"} onClick={()=>setWhen(id)}><Icon size={21}/><span>{label}</span></button>)}</div>
-       <h2>出發地點</h2>
+       <h2 id="location-options">出發地點</h2>
        <div className="locationRow"><button className="locationPrimary" onClick={requestLocation}><MapPin size={20}/>{userCoords?"重新取得位置":"使用我的位置"}<small>{userCoords?"已取得大概位置":"未授權時仍可用縣市推薦"}</small></button><select value={county} onChange={e=>setCounty(e.target.value)}>{COUNTIES.map(c=><option key={c}>{c}</option>)}</select></div>
        <h2>交通方式</h2>
        <div className="transportRow"><button className={transport==="drive"?"transportChoice selected":"transportChoice"} onClick={()=>setTransport("drive")}><Car size={22}/>開車</button><button className={transport==="transit"?"transportChoice selected":"transportChoice"} onClick={()=>setTransport("transit")}><Bus size={22}/>大眾運輸</button></div>
