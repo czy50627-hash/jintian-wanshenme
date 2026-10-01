@@ -211,7 +211,7 @@ function App(){
    </nav></>}
 
    {!result ? <>
-     <section className="introHero photoHero"><picture className="heroFamilyPicture" aria-hidden="true"><source media="(min-width: 768px)" srcSet="/assets/hero-family-v3.webp"/><source media="(max-width: 767px)" srcSet="/assets/hero-family-v3.webp"/><img className="heroFamilyImg" src="/assets/hero-family-v3.webp" alt="" fetchPriority="high" decoding="async"/></picture><div className="heroShade"></div><div className="heroCopy"><h1>不知道去哪？<br/><strong>今天玩什麼</strong><br/>幫你決定！</h1><div className="heroUnderline"></div><p>輸入幾個條件，馬上推薦最適合你們的親子行程。</p></div></section>
+     <section className="introHero photoHero"><picture className="heroFamilyPicture" aria-hidden="true"><source media="(min-width: 768px)" srcSet="/assets/hero-family-v3.webp?v=4"/><source media="(max-width: 767px)" srcSet="/assets/hero-family-v3.webp"/><img className="heroFamilyImg" src="/assets/hero-family-v3.webp?v=4" alt="" fetchPriority="high" decoding="async"/></picture><div className="heroShade"></div><div className="heroCopy"><h1>不知道去哪？<br/><strong>今天玩什麼</strong><br/>幫你決定！</h1><div className="heroUnderline"></div><p>輸入幾個條件，馬上推薦最適合你們的親子行程。</p></div></section>
      <section id="decision" className="decisionPanel">
        <h2>孩子幾歲？ <span>（可複選）</span></h2>
        <div className="ageChoiceGrid">{AGES.map(a=><button key={a.id} className={ages.includes(a.id)?"choiceCard selected":"choiceCard"} onClick={()=>toggleAge(a.id)}><div className="kidBadge"><Baby size={22}/></div><div><b>{a.label}</b><small>{a.sub}</small></div></button>)}</div>
